@@ -45,9 +45,15 @@ export default defineConfig(({ command }) => ({
       },
     }),
     // Nitro bundles the SSR server for production builds. NITRO_PRESET selects
-    // the deploy target: node-server (default), vercel, netlify, cloudflare-module…
+    // the deploy target: vercel (auto when VERCEL=1), node-server (default)…
     ...(command === "build"
-      ? [nitro({ preset: process.env["NITRO_PRESET"] || "node-server" })]
+      ? [
+          nitro({
+            preset:
+              process.env["NITRO_PRESET"] ||
+              (process.env["VERCEL"] ? "vercel" : "node-server"),
+          }),
+        ]
       : []),
     react(),
   ],
