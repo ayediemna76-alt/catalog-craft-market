@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Settings,
   ShoppingBag,
+  Sparkles,
   Users,
   Wallet,
 } from "lucide-react";
@@ -26,7 +27,7 @@ import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
-  to?: "/admin/dashboard" | "/admin/categories" | "/admin/settings";
+  to?: "/admin/dashboard" | "/admin/categories" | "/admin/ai-writer" | "/admin/settings";
   icon: typeof LayoutDashboard;
   fr: string;
   ar: string;
@@ -44,6 +45,7 @@ const NAV: { group: [string, string]; items: NavItem[] }[] = [
       { to: "/admin/categories", icon: FolderTree, fr: "Catégories & attributs", ar: "الأقسام والخصائص" },
       { icon: Package, fr: "Produits", ar: "المنتجات", soon: "3" },
       { icon: Boxes, fr: "Stock", ar: "المخزون", soon: "3" },
+      { to: "/admin/ai-writer", icon: Sparkles, fr: "Rédaction IA", ar: "التحرير بالذكاء الاصطناعي" },
     ],
   },
   {
