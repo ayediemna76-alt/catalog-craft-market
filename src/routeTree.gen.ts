@@ -18,6 +18,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminSetupRouteImport } from './routes/_authenticated/admin-setup'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminAiWriterRouteImport } from './routes/_authenticated/admin/ai-writer'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
@@ -66,6 +67,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminAiWriterRoute =
+  AuthenticatedAdminAiWriterRouteImport.update({
+    id: '/ai-writer',
+    path: '/ai-writer',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminCategoriesRoute =
   AuthenticatedAdminCategoriesRouteImport.update({
     id: '/categories',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
+  '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
+  '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRoute
+  '/_authenticated/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-setup'
     | '/my-account'
+    | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/settings'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin-setup'
     | '/my-account'
+    | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/settings'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/admin-setup'
     | '/_authenticated/my-account'
+    | '/_authenticated/admin/ai-writer'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/settings'
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/ai-writer': {
+      id: '/_authenticated/admin/ai-writer'
+      path: '/ai-writer'
+      fullPath: '/admin/ai-writer'
+      preLoaderRoute: typeof AuthenticatedAdminAiWriterRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/categories': {
       id: '/_authenticated/admin/categories'
       path: '/categories'
@@ -265,6 +285,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAiWriterRoute: typeof AuthenticatedAdminAiWriterRoute
   AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
@@ -273,6 +294,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminAiWriterRoute: AuthenticatedAdminAiWriterRoute,
     AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
     AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
     AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
