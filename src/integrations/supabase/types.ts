@@ -1442,6 +1442,14 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_product: { Args: { _product_id: string }; Returns: string }
+      get_best_sellers: {
+        Args: { _limit?: number }
+        Returns: {
+          product_id: string
+          sold: number
+        }[]
+      }
       get_category_attributes: {
         Args: { _category_id: string }
         Returns: {
@@ -1493,6 +1501,31 @@ export type Database = {
           _reason: string
         }
         Returns: Json
+      }
+      save_product: {
+        Args: {
+          _attributes: Json
+          _images: Json
+          _product: Json
+          _variants: Json
+        }
+        Returns: string
+      }
+      search_products: {
+        Args: {
+          _category_id?: string
+          _filters?: Json
+          _limit?: number
+          _max_price?: number
+          _min_price?: number
+          _offset?: number
+          _q?: string
+          _sort?: string
+        }
+        Returns: {
+          product_id: string
+          total: number
+        }[]
       }
       set_low_stock_threshold: {
         Args: { _threshold: number; _variant_id: string }
