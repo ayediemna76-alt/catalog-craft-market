@@ -24,6 +24,7 @@ export const descriptionInputSchema = z.object({
 });
 
 export type DescriptionInput = z.output<typeof descriptionInputSchema>;
+export type DescriptionInputRaw = z.input<typeof descriptionInputSchema>;
 
 export type DescriptionResult = {
   description_fr: string | null;
