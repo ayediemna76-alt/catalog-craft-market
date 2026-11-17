@@ -28,3 +28,12 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules (weshop)
+
+- Critical business operations (orders, stock moves, cash collection, returns, role grants) run only through SECURITY DEFINER database functions; clients never write orders/inventory/finance tables directly. Why: guarantees each stock reservation, release, restock and accounting entry happens exactly once.
+- Every product sells through variants; a product without options gets one default variant. Why: stock, cost and order lines stay uniform per variant.
+- Purchase costs live in admin-only tables (`product_private`, `variant_costs`), never on public catalog rows. Why: public catalog reads must not expose margins.
+- Catalog images go in the private `catalog` bucket with long-lived signed links stored on the row (workspace blocks public buckets). Why: images must render for anonymous shoppers.
+- Bilingual content uses `_fr` / `_ar` column pairs read through `pickLocale`; UI strings use `useI18n().t` or `tr(fr, ar)`. Why: French default with Arabic RTL everywhere.
+- Public storefront reads go through `src/lib/catalog.functions.ts` server functions with the publishable key so pages render on the server. Why: SEO and fast first paint.
