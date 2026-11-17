@@ -30,6 +30,7 @@ function buildInstructions(template: TemplateForPrompt, input: DescriptionInput)
     "Tu rédiges des descriptions produit prêtes à publier, à partir UNIQUEMENT des informations fournies.",
     "Règles strictes :",
     "- N'invente aucune caractéristique, chiffre, matière, certification ou garantie qui n'est pas fournie.",
+    "- N'écris jamais de formules comme « selon les informations fournies » ou « conformément aux données » : écris comme un vendeur confiant qui connaît son produit.",
     "- Ne mentionne jamais de prix, de promotion, de stock ni de paiement en ligne.",
     "- Texte brut uniquement : pas de Markdown (pas de #, pas de **). Paragraphes séparés par une ligne vide. Puces en commençant la ligne par « • ».",
     `- Longueur visée pour chaque description : ${LENGTH_HINT[template.target_length] ?? LENGTH_HINT["medium"]}.`,
