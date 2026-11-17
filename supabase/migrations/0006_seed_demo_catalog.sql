@@ -17,20 +17,54 @@ INSERT INTO public.description_templates (id, name, summary, instructions, targe
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.categories (id, parent_id, name_fr, name_ar, slug, description_fr, description_ar, image_url, display_order, is_active) VALUES
-(md5('cat-mode')::uuid, NULL, 'Mode', 'موضة', 'mode', 'Vêtements du quotidien, confortables et faciles à porter.', 'ملابس يومية مريحة وسهلة الارتداء.', '/demo/robe-ete-fleurie.jpg', 1, true),
-(md5('cat-electronique')::uuid, NULL, 'Électronique', 'إلكترونيات', 'electronique', 'Audio, montres et accessoires pour votre téléphone.', 'سماعات، ساعات وإكسسوارات لهاتفك.', '/demo/ecouteurs-sans-fil.jpg', 2, true),
-(md5('cat-maison-cuisine')::uuid, NULL, 'Maison & cuisine', 'المنزل والمطبخ', 'maison-cuisine', 'Artisanat tunisien et rangement malin pour la maison.', 'حرف تونسية وحلول تخزين ذكية للمنزل.', '/demo/theiere-ceramique.jpg', 3, true),
-(md5('cat-beaute')::uuid, NULL, 'Beauté & bien-être', 'الجمال والعناية', 'beaute', 'Soins naturels inspirés des traditions méditerranéennes.', 'منتجات عناية طبيعية مستوحاة من التقاليد المتوسطية.', '/demo/huile-argan.jpg', 4, true)
+(md5('cat-mode')::uuid, NULL, 'Mode & Vêtements', 'موضة وأزياء', 'mode', 'Vêtements du quotidien, confortables et faciles à porter.', 'ملابس يومية مريحة وسهلة الارتداء.', '/demo/robe-ete-fleurie.jpg', 1, true),
+(md5('cat-electronique')::uuid, NULL, 'Électronique & High-Tech', 'إلكترونيات وتكنولوجيا', 'electronique', 'Audio, montres et accessoires pour votre téléphone.', 'سماعات، ساعات وإكسسوارات لهاتفك.', '/demo/ecouteurs-sans-fil.jpg', 2, true),
+(md5('cat-maison-cuisine')::uuid, NULL, 'Maison & Cuisine', 'المنزل والمطبخ', 'maison-cuisine', 'Artisanat tunisien et rangement malin pour la maison.', 'حرف تونسية وحلول تخزين ذكية للمنزل.', '/demo/theiere-ceramique.jpg', 3, true),
+(md5('cat-beaute')::uuid, NULL, 'Beauté & Bien-être', 'الجمال والعناية', 'beaute', 'Soins naturels inspirés des traditions méditerranéennes.', 'منتجات عناية طبيعية مستوحاة من التقاليد المتوسطية.', '/demo/huile-argan.jpg', 4, true),
+(md5('cat-artisanat-terroir')::uuid, NULL, 'Artisanat & Terroir', 'صناعات تقليدية ومنتجات محلية', 'artisanat-terroir', 'Le savoir-faire authentique des artisans tunisiens : poterie, tissage et terroir.', 'أصالة الصناعة التقليدية التونسية: فخار نابل، مرقوم القيروان ومنتجات التراث.', '/demo/theiere-ceramique.jpg', 5, true),
+(md5('cat-sport')::uuid, NULL, 'Sport & Fitness', 'رياضة ولياقة بدنية', 'sport-fitness', 'Matériel d''entraînement, tenues sportives et accessoires outdoor.', 'معدات التمارين الرياضية، ملابس رياضية مريحة ومستلزمات اللياقة.', '/demo/montre-connectee.jpg', 6, true),
+(md5('cat-bebe-enfants')::uuid, NULL, 'Bébés & Enfants', 'أطفال ورضع', 'bebes-enfants', 'Vêtements doux pour bébés, puériculture et jeux d''éveil.', 'ملابس قطنية ناعمة للمواليد، ألعاب ذكاء وتنمية المهارات ومستلزمات الأطفال.', '/demo/robe-ete-fleurie.jpg', 7, true),
+(md5('cat-livres-culture')::uuid, NULL, 'Livres & Papeterie', 'كتب وقرطاسية', 'livres-papeterie', 'Romans passionnants, livres, carnets et stylos de calligraphie.', 'روايات أدبية، كتب تطوير الذات، دفاتر ملاحظات فاخرة وأدوات خط عربي.', '/demo/theiere-ceramique.jpg', 8, true)
 ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO public.categories (id, parent_id, name_fr, name_ar, slug, image_url, display_order, is_active) VALUES
-(md5('cat-t-shirts-sweats')::uuid, md5('cat-mode')::uuid, 'T-shirts & sweats', 'تي شيرت وسويت شيرت', 't-shirts-sweats', '/demo/tshirt-coton-bio.jpg', 1, true),
-(md5('cat-chemises')::uuid, md5('cat-mode')::uuid, 'Chemises', 'قمصان', 'chemises', '/demo/chemise-lin.jpg', 2, true),
-(md5('cat-robes')::uuid, md5('cat-mode')::uuid, 'Robes', 'فساتين', 'robes', '/demo/robe-ete-fleurie.jpg', 3, true),
-(md5('cat-audio')::uuid, md5('cat-electronique')::uuid, 'Audio', 'صوتيات', 'audio', '/demo/enceinte-bluetooth.jpg', 1, true),
-(md5('cat-montres-accessoires')::uuid, md5('cat-electronique')::uuid, 'Montres & accessoires', 'ساعات وإكسسوارات', 'montres-accessoires', '/demo/montre-connectee.jpg', 2, true),
-(md5('cat-cuisine')::uuid, md5('cat-maison-cuisine')::uuid, 'Cuisine', 'مطبخ', 'cuisine', '/demo/theiere-ceramique.jpg', 1, true),
-(md5('cat-rangement')::uuid, md5('cat-maison-cuisine')::uuid, 'Rangement', 'تخزين', 'rangement', '/demo/bocaux-verre.jpg', 2, true),
-(md5('cat-soins')::uuid, md5('cat-beaute')::uuid, 'Soins du corps', 'العناية بالجسم', 'soins', '/demo/savon-naturel.jpg', 1, true)
+(md5('cat-t-shirts-sweats')::uuid, md5('cat-mode')::uuid, 'T-shirts & Sweats', 'تي شيرت وسويت شيرت', 't-shirts-sweats', '/demo/tshirt-coton-bio.jpg', 1, true),
+(md5('cat-chemises')::uuid, md5('cat-mode')::uuid, 'Chemises & Hauts', 'قمصان وبلوزات', 'chemises', '/demo/chemise-lin.jpg', 2, true),
+(md5('cat-robes')::uuid, md5('cat-mode')::uuid, 'Robes & Jupes', 'فساتين وتنانير', 'robes', '/demo/robe-ete-fleurie.jpg', 3, true),
+(md5('cat-pantalons')::uuid, md5('cat-mode')::uuid, 'Pantalons & Jeans', 'سراويل وجينز', 'pantalons-jeans', '/demo/sweat-capuche.jpg', 4, true),
+(md5('cat-chaussures')::uuid, md5('cat-mode')::uuid, 'Chaussures & Baskets', 'أحذية وأحذية رياضية', 'chaussures', '/demo/tshirt-coton-bio.jpg', 5, true),
+(md5('cat-maroquinerie')::uuid, md5('cat-mode')::uuid, 'Sacs & Maroquinerie', 'حقائب ومصنوعات جلدية', 'sacs-maroquinerie', '/demo/robe-ete-fleurie.jpg', 6, true),
+
+(md5('cat-audio')::uuid, md5('cat-electronique')::uuid, 'Audio & Écouteurs', 'صوتيات وسماعات', 'audio', '/demo/enceinte-bluetooth.jpg', 1, true),
+(md5('cat-montres-accessoires')::uuid, md5('cat-electronique')::uuid, 'Montres Connectées', 'ساعات ذكية', 'montres-accessoires', '/demo/montre-connectee.jpg', 2, true),
+(md5('cat-telephones-tablettes')::uuid, md5('cat-electronique')::uuid, 'Smartphones & Tablettes', 'هواتف وأجهزة لوحية', 'smartphones-tablettes', '/demo/chargeur-rapide.jpg', 3, true),
+(md5('cat-accessoires-charge')::uuid, md5('cat-electronique')::uuid, 'Chargeurs & Câbles', 'شواحن وكابلات', 'chargeurs-cables', '/demo/chargeur-rapide.jpg', 4, true),
+(md5('cat-gaming')::uuid, md5('cat-electronique')::uuid, 'Gaming & Jeux vidéo', 'ألعاب الفيديو وملحقاتها', 'gaming', '/demo/enceinte-bluetooth.jpg', 5, true),
+
+(md5('cat-cuisine')::uuid, md5('cat-maison-cuisine')::uuid, 'Cuisine & Arts de la table', 'أدوات المطبخ ومائدة الطعام', 'cuisine', '/demo/theiere-ceramique.jpg', 1, true),
+(md5('cat-rangement')::uuid, md5('cat-maison-cuisine')::uuid, 'Rangement & Organisation', 'تنظيم وترتيب المنزل', 'rangement', '/demo/bocaux-verre.jpg', 2, true),
+(md5('cat-decoration')::uuid, md5('cat-maison-cuisine')::uuid, 'Décoration d''intérieur', 'ديكور المنزل والتحف', 'decoration-interieur', '/demo/theiere-ceramique.jpg', 3, true),
+(md5('cat-linge-maison')::uuid, md5('cat-maison-cuisine')::uuid, 'Linge de lit & Bain', 'مفروشات ومناشف', 'linge-maison', '/demo/chemise-lin.jpg', 4, true),
+
+(md5('cat-soins-visage')::uuid, md5('cat-beaute')::uuid, 'Soins du Visage', 'العناية بالوجه', 'soins-visage', '/demo/huile-argan.jpg', 1, true),
+(md5('cat-soins')::uuid, md5('cat-beaute')::uuid, 'Soins du Corps & Bain', 'العناية بالجسم والاستحمام', 'soins-corps', '/demo/savon-naturel.jpg', 2, true),
+(md5('cat-cheveux')::uuid, md5('cat-beaute')::uuid, 'Soins Capillaires', 'العناية بالشعر', 'soins-capillaires', '/demo/huile-argan.jpg', 3, true),
+(md5('cat-parfums')::uuid, md5('cat-beaute')::uuid, 'Parfums & Brumes', 'عطور ومعطرات', 'parfums', '/demo/savon-naturel.jpg', 4, true),
+
+(md5('cat-poterie-nabeul')::uuid, md5('cat-artisanat-terroir')::uuid, 'Poterie & Céramique de Nabeul', 'خزف وفخار نابل', 'poterie-ceramique', '/demo/theiere-ceramique.jpg', 1, true),
+(md5('cat-bois-olivier')::uuid, md5('cat-artisanat-terroir')::uuid, 'Bois d''Olivier sculpté', 'خشب الزيتون المنحوت', 'bois-olivier', '/demo/bocaux-verre.jpg', 2, true),
+(md5('cat-tapis-margoum')::uuid, md5('cat-artisanat-terroir')::uuid, 'Tapis & Margoum de Kairouan', 'زرابي ومرقوم القيروان', 'tapis-margoum', '/demo/chemise-lin.jpg', 3, true),
+(md5('cat-terroir-tunisien')::uuid, md5('cat-artisanat-terroir')::uuid, 'Produits du Terroir & Huile d''Olive', 'زيت زيتون ومؤونة تونسية', 'produits-terroir', '/demo/huile-argan.jpg', 4, true),
+
+(md5('cat-fitness-equipement')::uuid, md5('cat-sport')::uuid, 'Équipements de Musculation', 'معدات وأوزان رياضية', 'musculation-fitness', '/demo/montre-connectee.jpg', 1, true),
+(md5('cat-sport-textile')::uuid, md5('cat-sport')::uuid, 'Vêtements & Baskets de Sport', 'أزياء رياضية وأحذية تمرين', 'textile-sport', '/demo/tshirt-coton-bio.jpg', 2, true),
+(md5('cat-camping-outdoor')::uuid, md5('cat-sport')::uuid, 'Camping & Randonnée', 'تخييم ورحلات برية', 'camping-randonnee', '/demo/enceinte-bluetooth.jpg', 3, true),
+
+(md5('cat-mode-bebe')::uuid, md5('cat-bebe-enfants')::uuid, 'Vêtements Bébé & Enfant', 'ملابس الرضع والأطفال', 'mode-bebe-enfant', '/demo/tshirt-coton-bio.jpg', 1, true),
+(md5('cat-jouets-eveil')::uuid, md5('cat-bebe-enfants')::uuid, 'Jeux & Jouets d''éveil', 'ألعاب تعليمية وترفيهية', 'jouets-eveil', '/demo/bocaux-verre.jpg', 2, true),
+
+(md5('cat-litterature')::uuid, md5('cat-livres-culture')::uuid, 'Romans & Littérature', 'روايات وأدب', 'romans-litterature', '/demo/theiere-ceramique.jpg', 1, true),
+(md5('cat-papeterie')::uuid, md5('cat-livres-culture')::uuid, 'Carnets & Fournitures de Bureau', 'أجندات ومستلزمات مكتبية', 'papeterie-bureau', '/demo/bocaux-verre.jpg', 2, true)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.category_attributes (id, category_id, code, name_fr, name_ar, type, unit, is_required, is_filterable, is_searchable, is_variant, display_order) VALUES

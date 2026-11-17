@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -43,19 +42,27 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+  const msg = error instanceof Error ? error.message : String(error);
+  const isSchemaError =
+    msg.includes("schema cache") ||
+    msg.includes("PGRST205") ||
+    msg.includes("relation") ||
+    msg.includes("does not exist");
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
+      <div className="max-w-lg text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Cette page n'a pas pu se charger
+          {isSchemaError ? "Base de données non initialisée" : "Cette page n'a pas pu se charger"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Un problème est survenu. Réessayez ou revenez à l'accueil.
+          {isSchemaError
+            ? "Les tables de la base de données Supabase ne sont pas encore créées. Veuillez exécuter 'supabase/bootstrap.sql' dans l'éditeur SQL de votre tableau de bord Supabase."
+            : "Un problème est survenu. Réessayez ou revenez à l'accueil."}
         </p>
+        <div className="mt-4 rounded border bg-muted/60 p-3 text-start font-mono text-xs text-muted-foreground break-all">
+          {msg}
+        </div>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -84,10 +91,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "weshop — Achetez en ligne, payez à la livraison" },
-      { name: "description", content: "weshop : boutique en ligne en Tunisie, paiement à la livraison." },
+      {
+        name: "description",
+        content: "weshop : boutique en ligne en Tunisie, paiement à la livraison.",
+      },
       { name: "author", content: "weshop" },
       { property: "og:title", content: "weshop" },
-      { property: "og:description", content: "Boutique en ligne en Tunisie, paiement à la livraison." },
+      {
+        property: "og:description",
+        content: "Boutique en ligne en Tunisie, paiement à la livraison.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

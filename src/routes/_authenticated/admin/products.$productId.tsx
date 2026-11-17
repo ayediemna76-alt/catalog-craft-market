@@ -15,7 +15,11 @@ export const Route = createFileRoute("/_authenticated/admin/products/$productId"
   head: () => ({
     meta: [
       { title: "Fiche produit — weshop admin" },
-      { name: "description", content: "Créer ou modifier un produit : photos, caractéristiques, variantes, prix et stock." },
+      {
+        name: "description",
+        content:
+          "Créer ou modifier un produit : photos, caractéristiques, variantes, prix et stock.",
+      },
       { property: "og:title", content: "Fiche produit — weshop admin" },
       { property: "og:description", content: "Administration weshop." },
       { property: "og:type", content: "website" },
@@ -35,7 +39,11 @@ function ProductEditPage() {
   const categories = useQuery({
     queryKey: ["admin", "categories"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").order("display_order").order("name_fr");
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("display_order")
+        .order("name_fr");
       if (error) throw error;
       return data as Category[];
     },
@@ -47,16 +55,39 @@ function ProductEditPage() {
   });
 
   if (!loading && !isAdmin) {
-    return <EmptyState icon={ShieldAlert} title={tr("Réservé aux administrateurs", "مخصص للمشرفين")} description={tr("Seuls les administrateurs peuvent modifier les produits.", "فقط المشرفون يمكنهم تعديل المنتجات.")} />;
+    return (
+      <EmptyState
+        icon={ShieldAlert}
+        title={tr("Réservé aux administrateurs", "مخصص للمشرفين")}
+        description={tr(
+          "Seuls les administrateurs peuvent modifier les produits.",
+          "فقط المشرفون يمكنهم تعديل المنتجات.",
+        )}
+      />
+    );
   }
-  if (categories.error || product.error) return <ErrorState error={categories.error ?? product.error} onRetry={() => { categories.refetch(); product.refetch(); }} />;
-  if (categories.isLoading || (!isNew && product.isLoading)) return <Skeleton className="h-[70vh] rounded-2xl" />;
+  if (categories.error || product.error)
+    return (
+      <ErrorState
+        error={categories.error ?? product.error}
+        onRetry={() => {
+          categories.refetch();
+          product.refetch();
+        }}
+      />
+    );
+  if (categories.isLoading || (!isNew && product.isLoading))
+    return <Skeleton className="h-[70vh] rounded-2xl" />;
   if (!isNew && !product.data) {
     return (
       <EmptyState
         icon={Package}
         title={tr("Produit introuvable", "المنتج غير موجود")}
-        action={<Button asChild variant="outline"><Link to="/admin/products">{tr("Retour aux produits", "العودة إلى المنتجات")}</Link></Button>}
+        action={
+          <Button asChild variant="outline">
+            <Link to="/admin/products">{tr("Retour aux produits", "العودة إلى المنتجات")}</Link>
+          </Button>
+        }
       />
     );
   }
@@ -65,10 +96,23 @@ function ProductEditPage() {
       <EmptyState
         icon={Package}
         title={tr("Créez d'abord une catégorie", "أنشئ قسماً أولاً")}
-        description={tr("Chaque produit appartient à une catégorie qui définit ses caractéristiques.", "كل منتج ينتمي إلى قسم يحدد خصائصه.")}
-        action={<Button asChild><Link to="/admin/categories">{tr("Gérer les catégories", "إدارة الأقسام")}</Link></Button>}
+        description={tr(
+          "Chaque produit appartient à une catégorie qui définit ses caractéristiques.",
+          "كل منتج ينتمي إلى قسم يحدد خصائصه.",
+        )}
+        action={
+          <Button asChild>
+            <Link to="/admin/categories">{tr("Gérer les catégories", "إدارة الأقسام")}</Link>
+          </Button>
+        }
       />
     );
   }
-  return <ProductForm key={productId} categories={categories.data} initial={isNew ? null : product.data ?? null} />;
+  return (
+    <ProductForm
+      key={productId}
+      categories={categories.data}
+      initial={isNew ? null : (product.data ?? null)}
+    />
+  );
 }

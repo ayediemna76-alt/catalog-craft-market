@@ -7,8 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { dbErrorMessage, slugify } from "@/lib/format";
 import { uploadCatalogImage } from "@/lib/storage";
@@ -26,7 +39,14 @@ type Props = {
   onSaved?: (id: string) => void;
 };
 
-export function CategoryDialog({ open, onOpenChange, categories, editing, defaultParentId, onSaved }: Props) {
+export function CategoryDialog({
+  open,
+  onOpenChange,
+  categories,
+  editing,
+  defaultParentId,
+  onSaved,
+}: Props) {
   const { tr } = useI18n();
   const qc = useQueryClient();
   const [slugTouched, setSlugTouched] = useState(false);
@@ -53,7 +73,9 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
       description_fr: editing?.description_fr ?? "",
       description_ar: editing?.description_ar ?? "",
       parent_id: editing ? (editing.parent_id ?? ROOT) : (defaultParentId ?? ROOT),
-      display_order: editing?.display_order ?? categories.filter((c) => c.parent_id === (defaultParentId ?? null)).length,
+      display_order:
+        editing?.display_order ??
+        categories.filter((c) => c.parent_id === (defaultParentId ?? null)).length,
       is_active: editing?.is_active ?? true,
       image_url: editing?.image_url ?? "",
     });
@@ -63,7 +85,12 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
     const blocked = editing ? descendantIds(categories, editing.id) : new Set<string>();
     return categories
       .filter((c) => !blocked.has(c.id))
-      .map((c) => ({ id: c.id, label: categoryPath(categories, c.id).map((p) => p.name_fr).join(" › ") }))
+      .map((c) => ({
+        id: c.id,
+        label: categoryPath(categories, c.id)
+          .map((p) => p.name_fr)
+          .join(" › "),
+      }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [categories, editing]);
 
@@ -87,7 +114,11 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
         if (error) throw error;
         return editing.id;
       }
-      const { data, error } = await supabase.from("categories").insert(payload).select("id").single();
+      const { data, error } = await supabase
+        .from("categories")
+        .insert(payload)
+        .select("id")
+        .single();
       if (error) throw error;
       return data.id;
     },
@@ -123,8 +154,17 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{editing ? tr("Modifier la catégorie", "تعديل القسم") : tr("Nouvelle catégorie", "قسم جديد")}</DialogTitle>
-          <DialogDescription>{tr("Les catégories peuvent être imbriquées sans limite.", "يمكن تداخل الأقسام بلا حدود.")}</DialogDescription>
+          <DialogTitle>
+            {editing
+              ? tr("Modifier la catégorie", "تعديل القسم")
+              : tr("Nouvelle catégorie", "قسم جديد")}
+          </DialogTitle>
+          <DialogDescription>
+            {tr(
+              "Les catégories peuvent être imbriquées sans limite.",
+              "يمكن تداخل الأقسام بلا حدود.",
+            )}
+          </DialogDescription>
         </DialogHeader>
         <form id="category-form" onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -142,7 +182,13 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="cat-name-ar">{tr("Nom (arabe)", "الاسم (عربية)")}</Label>
-            <Input id="cat-name-ar" dir="rtl" maxLength={120} value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} />
+            <Input
+              id="cat-name-ar"
+              dir="rtl"
+              maxLength={120}
+              value={form.name_ar}
+              onChange={(e) => setForm({ ...form, name_ar: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="cat-slug">Slug (URL) *</Label>
@@ -159,23 +205,45 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
           </div>
           <div className="space-y-1.5">
             <Label>{tr("Catégorie parente", "القسم الأم")}</Label>
-            <Select value={form.parent_id} onValueChange={(v) => setForm({ ...form, parent_id: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.parent_id}
+              onValueChange={(v) => setForm({ ...form, parent_id: v })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ROOT}>{tr("— Aucune (catégorie principale) —", "— بدون (قسم رئيسي) —")}</SelectItem>
+                <SelectItem value={ROOT}>
+                  {tr("— Aucune (catégorie principale) —", "— بدون (قسم رئيسي) —")}
+                </SelectItem>
                 {parentOptions.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="cat-desc-fr">{tr("Description (français)", "الوصف (فرنسية)")}</Label>
-            <Textarea id="cat-desc-fr" rows={2} maxLength={2000} value={form.description_fr} onChange={(e) => setForm({ ...form, description_fr: e.target.value })} />
+            <Textarea
+              id="cat-desc-fr"
+              rows={2}
+              maxLength={2000}
+              value={form.description_fr}
+              onChange={(e) => setForm({ ...form, description_fr: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="cat-desc-ar">{tr("Description (arabe)", "الوصف (عربية)")}</Label>
-            <Textarea id="cat-desc-ar" dir="rtl" rows={2} maxLength={2000} value={form.description_ar} onChange={(e) => setForm({ ...form, description_ar: e.target.value })} />
+            <Textarea
+              id="cat-desc-ar"
+              dir="rtl"
+              rows={2}
+              maxLength={2000}
+              value={form.description_ar}
+              onChange={(e) => setForm({ ...form, description_ar: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label>{tr("Image", "الصورة")}</Label>
@@ -195,32 +263,55 @@ export function CategoryDialog({ open, onOpenChange, categories, editing, defaul
                   </>
                 ) : (
                   <span className="grid h-full w-full place-items-center text-muted-foreground">
-                    {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImagePlus className="h-5 w-5" />}
+                    {uploading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <ImagePlus className="h-5 w-5" />
+                    )}
                   </span>
                 )}
               </div>
               <label className="cursor-pointer text-sm font-medium text-primary hover:underline">
                 {tr("Choisir un fichier", "اختر ملفاً")}
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  className="sr-only"
+                  onChange={(e) => onFile(e.target.files?.[0])}
+                />
               </label>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="cat-order">{tr("Ordre d'affichage", "ترتيب العرض")}</Label>
-              <Input id="cat-order" type="number" min={0} value={form.display_order} onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })} />
+              <Input
+                id="cat-order"
+                type="number"
+                min={0}
+                value={form.display_order}
+                onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cat-active">{tr("Statut", "الحالة")}</Label>
               <div className="flex h-9 items-center gap-2">
-                <Switch id="cat-active" checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
-                <span className="text-sm">{form.is_active ? tr("Active", "نشط") : tr("Inactive", "غير نشط")}</span>
+                <Switch
+                  id="cat-active"
+                  checked={form.is_active}
+                  onCheckedChange={(v) => setForm({ ...form, is_active: v })}
+                />
+                <span className="text-sm">
+                  {form.is_active ? tr("Active", "نشط") : tr("Inactive", "غير نشط")}
+                </span>
               </div>
             </div>
           </div>
         </form>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>{tr("Annuler", "إلغاء")}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {tr("Annuler", "إلغاء")}
+          </Button>
           <Button form="category-form" disabled={save.isPending || uploading}>
             {save.isPending && <Loader2 className="animate-spin" />}
             {tr("Enregistrer", "حفظ")}

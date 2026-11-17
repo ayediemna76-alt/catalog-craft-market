@@ -12,7 +12,10 @@ export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
       { title: "Nouveau mot de passe — weshop" },
-      { name: "description", content: "Choisissez un nouveau mot de passe pour votre compte weshop." },
+      {
+        name: "description",
+        content: "Choisissez un nouveau mot de passe pour votre compte weshop.",
+      },
       { property: "og:title", content: "Nouveau mot de passe — weshop" },
       { property: "og:description", content: "Réinitialisation du mot de passe weshop." },
       { property: "og:type", content: "website" },
@@ -45,13 +48,27 @@ function ResetPasswordPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 px-4">
       <Logo />
-      <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-2xl border bg-card p-6 shadow-card">
+      <form
+        onSubmit={onSubmit}
+        className="w-full max-w-sm space-y-4 rounded-2xl border bg-card p-6 shadow-card"
+      >
         <h1 className="text-xl font-bold">{t("auth.newPassword")}</h1>
         <div className="space-y-1.5">
           <Label htmlFor="pw">{t("auth.newPassword")}</Label>
-          <Input id="pw" type="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" autoComplete="new-password" />
+          <Input
+            id="pw"
+            type="password"
+            minLength={8}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            dir="ltr"
+            autoComplete="new-password"
+          />
         </div>
-        <Button className="w-full" disabled={busy}>{t("auth.updatePassword")}</Button>
+        <Button className="w-full" disabled={busy}>
+          {t("auth.updatePassword")}
+        </Button>
       </form>
     </div>
   );

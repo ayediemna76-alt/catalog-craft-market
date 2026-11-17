@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
+import { Coins, LayoutDashboard, LogOut, Package, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,16 +48,25 @@ export function AccountMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-primary-soft text-xs font-bold text-primary">{initial}</span>
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-primary-soft text-xs font-bold text-primary">
+            {initial}
+          </span>
           <span className="hidden max-w-32 truncate sm:inline">{t("nav.account")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="truncate text-xs font-normal text-muted-foreground">{user.email}</DropdownMenuLabel>
+        <DropdownMenuLabel className="truncate text-xs font-normal text-muted-foreground">
+          {user.email}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="/my-account">
             <User /> {t("nav.account")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard">
+            <Coins className="text-amber-500" /> Espace Vendeur & Tokens
           </Link>
         </DropdownMenuItem>
         {isStaff && (

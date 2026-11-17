@@ -18,6 +18,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminSetupRouteImport } from './routes/_authenticated/admin-setup'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -26,6 +27,7 @@ import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminTokensRouteImport } from './routes/_authenticated/admin/tokens'
 import { Route as AuthenticatedAdminProductsIndexRouteImport } from './routes/_authenticated/admin/products.index'
 import { Route as AuthenticatedAdminProductsProductIdRouteImport } from './routes/_authenticated/admin/products.$productId'
 
@@ -73,6 +75,11 @@ const AuthenticatedAdminSetupRoute = AuthenticatedAdminSetupRouteImport.update({
   path: '/admin-setup',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMyAccountRoute = AuthenticatedMyAccountRouteImport.update({
   id: '/my-account',
   path: '/my-account',
@@ -118,6 +125,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminTokensRoute =
+  AuthenticatedAdminTokensRouteImport.update({
+    id: '/tokens',
+    path: '/tokens',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminProductsIndexRoute =
   AuthenticatedAdminProductsIndexRouteImport.update({
     id: '/products/',
@@ -140,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
@@ -147,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
   '/admin/products/': typeof AuthenticatedAdminProductsIndexRoute
@@ -159,6 +174,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
@@ -166,6 +182,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
   '/admin/products': typeof AuthenticatedAdminProductsIndexRoute
@@ -181,6 +198,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin-setup': typeof AuthenticatedAdminSetupRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRoute
   '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
@@ -188,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/tokens': typeof AuthenticatedAdminTokensRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
   '/_authenticated/admin/products/': typeof AuthenticatedAdminProductsIndexRoute
@@ -203,6 +222,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/admin'
     | '/admin-setup'
+    | '/dashboard'
     | '/my-account'
     | '/product/$slug'
     | '/admin/ai-writer'
@@ -210,6 +230,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/inventory'
     | '/admin/settings'
+    | '/admin/tokens'
     | '/admin/'
     | '/admin/products/$productId'
     | '/admin/products/'
@@ -222,6 +243,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shop'
     | '/admin-setup'
+    | '/dashboard'
     | '/my-account'
     | '/product/$slug'
     | '/admin/ai-writer'
@@ -229,6 +251,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/inventory'
     | '/admin/settings'
+    | '/admin/tokens'
     | '/admin'
     | '/admin/products/$productId'
     | '/admin/products'
@@ -243,6 +266,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/_authenticated/admin'
     | '/_authenticated/admin-setup'
+    | '/_authenticated/dashboard'
     | '/_authenticated/my-account'
     | '/product/$slug'
     | '/_authenticated/admin/ai-writer'
@@ -250,6 +274,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/inventory'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/tokens'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/products/$productId'
     | '/_authenticated/admin/products/'
@@ -331,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSetupRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/my-account': {
       id: '/_authenticated/my-account'
       path: '/my-account'
@@ -387,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/tokens': {
+      id: '/_authenticated/admin/tokens'
+      path: '/tokens'
+      fullPath: '/admin/tokens'
+      preLoaderRoute: typeof AuthenticatedAdminTokensRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/products/': {
       id: '/_authenticated/admin/products/'
       path: '/products'
@@ -410,6 +449,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminInventoryRoute: typeof AuthenticatedAdminInventoryRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminTokensRoute: typeof AuthenticatedAdminTokensRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminProductsProductIdRoute: typeof AuthenticatedAdminProductsProductIdRoute
   AuthenticatedAdminProductsIndexRoute: typeof AuthenticatedAdminProductsIndexRoute
@@ -422,6 +462,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
     AuthenticatedAdminInventoryRoute: AuthenticatedAdminInventoryRoute,
     AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+    AuthenticatedAdminTokensRoute: AuthenticatedAdminTokensRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
     AuthenticatedAdminProductsProductIdRoute:
       AuthenticatedAdminProductsProductIdRoute,
@@ -436,12 +477,14 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAdminSetupRoute: typeof AuthenticatedAdminSetupRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMyAccountRoute: typeof AuthenticatedMyAccountRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAdminSetupRoute: AuthenticatedAdminSetupRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMyAccountRoute: AuthenticatedMyAccountRoute,
 }
 

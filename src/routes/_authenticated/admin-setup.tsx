@@ -64,7 +64,9 @@ function AdminSetupPage() {
           <>
             <ShieldCheck className="mx-auto h-10 w-10 text-success" />
             <p className="mt-4 font-medium">{t("setup.done")}</p>
-            <Button asChild className="mt-6"><Link to="/admin/dashboard">{t("nav.admin")}</Link></Button>
+            <Button asChild className="mt-6">
+              <Link to="/admin/dashboard">{t("nav.admin")}</Link>
+            </Button>
           </>
         ) : exists.isLoading ? (
           <p className="text-muted-foreground">{t("common.loading")}</p>
@@ -73,16 +75,26 @@ function AdminSetupPage() {
             <ShieldX className="mx-auto h-10 w-10 text-muted-foreground" />
             <h1 className="mt-4 text-xl font-bold">{t("setup.title")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">{t("setup.taken")}</p>
-            <p className="mt-4 text-xs text-muted-foreground" dir="ltr">{user?.email}</p>
-            <Button asChild variant="outline" className="mt-6"><Link to="/">{t("nav.home")}</Link></Button>
+            <p className="mt-4 text-xs text-muted-foreground" dir="ltr">
+              {user?.email}
+            </p>
+            <Button asChild variant="outline" className="mt-6">
+              <Link to="/">{t("nav.home")}</Link>
+            </Button>
           </>
         ) : (
           <>
             <ShieldCheck className="mx-auto h-10 w-10 text-primary" />
             <h1 className="mt-4 text-xl font-bold">{t("setup.title")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">{t("setup.desc")}</p>
-            <p className="mt-4 text-xs text-muted-foreground" dir="ltr">{user?.email}</p>
-            <Button className="mt-6 w-full" disabled={claim.isPending} onClick={() => claim.mutate()}>
+            <p className="mt-4 text-xs text-muted-foreground" dir="ltr">
+              {user?.email}
+            </p>
+            <Button
+              className="mt-6 w-full"
+              disabled={claim.isPending}
+              onClick={() => claim.mutate()}
+            >
               {t("setup.claim")}
             </Button>
           </>

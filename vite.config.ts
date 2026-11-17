@@ -1,18 +1,54 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// Never set ssr.external or resolve.external: the Worker has no runtime module resolution, so
-// the build fails. Never add compression (compressPublicAssets, vite-plugin-compression):
-// hosting already compresses at the edge.
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import tsConfigPaths from "vite-tsconfig-paths";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
+import react from "@vitejs/plugin-react";
 
-export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
+export default defineConfig(({ command }) => ({
+  // Vite only exposes prefixed variables to the browser bundle. NEXT_PUBLIC_ is
+  // accepted as well so copy-pasted snippet names from the Supabase dashboard
+  // keep working, but VITE_* is the preferred spelling in this project.
+  envPrefix: ["VITE_", "NEXT_PUBLIC_"],
+  server: { host: "::", port: 8080 },
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    dedupe: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "@tanstack/react-query",
+      "@tanstack/query-core",
+    ],
   },
-});
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+    ],
+  },
+  plugins: [
+    tailwindcss(),
+    tsConfigPaths({ projects: ["./tsconfig.json"] }),
+    tanstackStart({
+      // src/server.ts is the custom SSR entry (error wrapper); it is not the
+      // default `src/server.ts` convention only because we opt in explicitly.
+      server: { entry: "server" },
+      importProtection: {
+        behavior: "error",
+        client: { files: ["**/server/**"], specifiers: ["server-only"] },
+      },
+    }),
+    // Nitro bundles the SSR server for production builds. NITRO_PRESET selects
+    // the deploy target: node-server (default), vercel, netlify, cloudflare-module…
+    ...(command === "build"
+      ? [nitro({ preset: process.env["NITRO_PRESET"] || "node-server" })]
+      : []),
+    react(),
+  ],
+}));

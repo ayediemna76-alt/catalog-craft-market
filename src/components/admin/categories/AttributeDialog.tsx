@@ -6,14 +6,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { codify, dbErrorMessage } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
-import { ATTRIBUTE_TYPES, typeHasOptions, type AttributeType, type AttributeWithOptions } from "./types";
+import {
+  ATTRIBUTE_TYPES,
+  typeHasOptions,
+  type AttributeType,
+  type AttributeWithOptions,
+} from "./types";
 
-type OptionDraft = { id?: string; value: string; label_fr: string; label_ar: string; color_hex: string };
+type OptionDraft = {
+  id?: string;
+  value: string;
+  label_fr: string;
+  label_ar: string;
+  color_hex: string;
+};
 
 type Props = {
   open: boolean;
@@ -59,7 +83,13 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
     setOptions(
       [...(editing?.category_attribute_options ?? [])]
         .sort((a, b) => a.display_order - b.display_order)
-        .map((o) => ({ id: o.id, value: o.value, label_fr: o.label_fr ?? "", label_ar: o.label_ar ?? "", color_hex: o.color_hex ?? "" })),
+        .map((o) => ({
+          id: o.id,
+          value: o.value,
+          label_fr: o.label_fr ?? "",
+          label_ar: o.label_ar ?? "",
+          color_hex: o.color_hex ?? "",
+        })),
     );
   }, [open, editing, nextOrder]);
 
@@ -73,11 +103,15 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
       const code = codify(form.code || name_fr);
       if (!code) throw new Error(tr("Code invalide.", "رمز غير صالح."));
       const cleaned = options.map((o) => ({ ...o, value: o.value.trim() })).filter((o) => o.value);
-      if (hasOptions && cleaned.length === 0) throw new Error(tr("Ajoutez au moins une valeur.", "أضف قيمة واحدة على الأقل."));
+      if (hasOptions && cleaned.length === 0)
+        throw new Error(tr("Ajoutez au moins une valeur.", "أضف قيمة واحدة على الأقل."));
       const values = cleaned.map((o) => o.value.toLowerCase());
-      if (new Set(values).size !== values.length) throw new Error(tr("Valeurs en double.", "قيم مكررة."));
+      if (new Set(values).size !== values.length)
+        throw new Error(tr("Valeurs en double.", "قيم مكررة."));
       if (form.type === "color" && cleaned.some((o) => !/^#[0-9a-fA-F]{6}$/.test(o.color_hex))) {
-        throw new Error(tr("Chaque couleur doit avoir un code couleur.", "يجب أن يكون لكل لون رمز."));
+        throw new Error(
+          tr("Chaque couleur doit avoir un code couleur.", "يجب أن يكون لكل لون رمز."),
+        );
       }
 
       const payload = {
@@ -86,7 +120,8 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
         name_ar: form.name_ar.trim() || null,
         code,
         type: form.type,
-        unit: form.type === "measurement" || form.type === "number" ? form.unit.trim() || null : null,
+        unit:
+          form.type === "measurement" || form.type === "number" ? form.unit.trim() || null : null,
         is_required: form.is_required,
         is_filterable: form.is_filterable,
         is_searchable: form.is_searchable,
@@ -96,18 +131,33 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
 
       let attributeId = editing?.id;
       if (editing) {
-        const { error } = await supabase.from("category_attributes").update(payload).eq("id", editing.id);
+        const { error } = await supabase
+          .from("category_attributes")
+          .update(payload)
+          .eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { data, error } = await supabase.from("category_attributes").insert(payload).select("id").single();
+        const { data, error } = await supabase
+          .from("category_attributes")
+          .insert(payload)
+          .select("id")
+          .single();
         if (error) throw error;
         attributeId = data.id;
       }
 
       const keepIds = new Set(cleaned.filter((o) => o.id).map((o) => o.id!));
-      const removed = (editing?.category_attribute_options ?? []).filter((o) => !hasOptions || !keepIds.has(o.id));
+      const removed = (editing?.category_attribute_options ?? []).filter(
+        (o) => !hasOptions || !keepIds.has(o.id),
+      );
       if (removed.length) {
-        const { error } = await supabase.from("category_attribute_options").delete().in("id", removed.map((o) => o.id));
+        const { error } = await supabase
+          .from("category_attribute_options")
+          .delete()
+          .in(
+            "id",
+            removed.map((o) => o.id),
+          );
         if (error) throw error;
       }
       if (hasOptions) {
@@ -153,19 +203,54 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
     });
 
   const flags = [
-    { key: "is_required" as const, fr: "Obligatoire", ar: "إجباري", hintFr: "Doit être rempli pour chaque produit", hintAr: "يجب تعبئتها لكل منتج", disabled: false },
-    { key: "is_filterable" as const, fr: "Filtrable", ar: "قابل للتصفية", hintFr: "Proposé comme filtre en boutique", hintAr: "يظهر كمرشح في المتجر", disabled: false },
-    { key: "is_searchable" as const, fr: "Recherchable", ar: "قابل للبحث", hintFr: "Inclus dans la recherche", hintAr: "مضمن في البحث", disabled: false },
-    { key: "is_variant" as const, fr: "Crée des variantes", ar: "ينشئ متغيرات", hintFr: "Ex. taille × couleur, stock séparé", hintAr: "مثلاً مقاس × لون، مخزون منفصل", disabled: !canBeVariant },
+    {
+      key: "is_required" as const,
+      fr: "Obligatoire",
+      ar: "إجباري",
+      hintFr: "Doit être rempli pour chaque produit",
+      hintAr: "يجب تعبئتها لكل منتج",
+      disabled: false,
+    },
+    {
+      key: "is_filterable" as const,
+      fr: "Filtrable",
+      ar: "قابل للتصفية",
+      hintFr: "Proposé comme filtre en boutique",
+      hintAr: "يظهر كمرشح في المتجر",
+      disabled: false,
+    },
+    {
+      key: "is_searchable" as const,
+      fr: "Recherchable",
+      ar: "قابل للبحث",
+      hintFr: "Inclus dans la recherche",
+      hintAr: "مضمن في البحث",
+      disabled: false,
+    },
+    {
+      key: "is_variant" as const,
+      fr: "Crée des variantes",
+      ar: "ينشئ متغيرات",
+      hintFr: "Ex. taille × couleur, stock séparé",
+      hintAr: "مثلاً مقاس × لون، مخزون منفصل",
+      disabled: !canBeVariant,
+    },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{editing ? tr("Modifier l'attribut", "تعديل الخاصية") : tr("Nouvel attribut", "خاصية جديدة")}</DialogTitle>
+          <DialogTitle>
+            {editing
+              ? tr("Modifier l'attribut", "تعديل الخاصية")
+              : tr("Nouvel attribut", "خاصية جديدة")}
+          </DialogTitle>
           <DialogDescription>
-            {tr("Cet attribut s'applique à cette catégorie et à toutes ses sous-catégories.", "تنطبق هذه الخاصية على هذا القسم وكل أقسامه الفرعية.")}
+            {tr(
+              "Cet attribut s'applique à cette catégorie et à toutes ses sous-catégories.",
+              "تنطبق هذه الخاصية على هذا القسم وكل أقسامه الفرعية.",
+            )}
           </DialogDescription>
         </DialogHeader>
         <form id="attribute-form" onSubmit={submit} className="space-y-5">
@@ -186,15 +271,28 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="attr-name-ar">{tr("Nom (arabe)", "الاسم (عربية)")}</Label>
-              <Input id="attr-name-ar" dir="rtl" maxLength={80} value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} />
+              <Input
+                id="attr-name-ar"
+                dir="rtl"
+                maxLength={80}
+                value={form.name_ar}
+                onChange={(e) => setForm({ ...form, name_ar: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>{tr("Type", "النوع")}</Label>
-              <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as AttributeType })}>
-                <SelectTrigger aria-label={tr("Type", "النوع")}><SelectValue /></SelectTrigger>
+              <Select
+                value={form.type}
+                onValueChange={(v) => setForm({ ...form, type: v as AttributeType })}
+              >
+                <SelectTrigger aria-label={tr("Type", "النوع")}>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {ATTRIBUTE_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{tr(t.fr, t.ar)}</SelectItem>
+                    <SelectItem key={t.value} value={t.value}>
+                      {tr(t.fr, t.ar)}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -207,30 +305,58 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
                 value={form.code}
                 onChange={(e) => {
                   setCodeTouched(true);
-                  setForm({ ...form, code: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") });
+                  setForm({
+                    ...form,
+                    code: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                  });
                 }}
               />
             </div>
             {(form.type === "measurement" || form.type === "number") && (
               <div className="space-y-1.5">
                 <Label htmlFor="attr-unit">{tr("Unité", "الوحدة")}</Label>
-                <Input id="attr-unit" maxLength={20} placeholder="cm, kg, L, Go, W…" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
+                <Input
+                  id="attr-unit"
+                  maxLength={20}
+                  placeholder="cm, kg, L, Go, W…"
+                  value={form.unit}
+                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                />
               </div>
             )}
             <div className="space-y-1.5">
               <Label htmlFor="attr-order">{tr("Ordre d'affichage", "ترتيب العرض")}</Label>
-              <Input id="attr-order" type="number" min={0} value={form.display_order} onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })} />
+              <Input
+                id="attr-order"
+                type="number"
+                min={0}
+                value={form.display_order}
+                onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })}
+              />
             </div>
           </div>
 
           <div className="grid gap-3 rounded-xl border bg-muted/40 p-4 sm:grid-cols-2">
             {flags.map((f) => (
-              <label key={f.key} className={`flex items-start gap-3 ${f.disabled ? "opacity-50" : ""}`}>
-                <Switch checked={form[f.key] && !f.disabled} disabled={f.disabled} onCheckedChange={(v) => setForm({ ...form, [f.key]: v })} className="mt-0.5" />
+              <label
+                key={f.key}
+                className={`flex items-start gap-3 ${f.disabled ? "opacity-50" : ""}`}
+              >
+                <Switch
+                  checked={form[f.key] && !f.disabled}
+                  disabled={f.disabled}
+                  onCheckedChange={(v) => setForm({ ...form, [f.key]: v })}
+                  className="mt-0.5"
+                />
                 <span>
                   <span className="block text-sm font-medium">{tr(f.fr, f.ar)}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {f.disabled ? tr("Uniquement pour les types Liste ou Couleur", "فقط لنوع القائمة أو اللون") : tr(f.hintFr, f.hintAr)}
+                    {f.disabled
+                      ? tr(
+                          "Uniquement pour les types Liste ou Couleur",
+                          "فقط لنوع القائمة أو اللون",
+                        )
+                      : tr(f.hintFr, f.hintAr)}
                   </span>
                 </span>
               </label>
@@ -245,20 +371,39 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
                   type="button"
                   size="sm"
                   variant="outline"
-                  onClick={() => setOptions((o) => [...o, { value: "", label_fr: "", label_ar: "", color_hex: form.type === "color" ? "#0f766e" : "" }])}
+                  onClick={() =>
+                    setOptions((o) => [
+                      ...o,
+                      {
+                        value: "",
+                        label_fr: "",
+                        label_ar: "",
+                        color_hex: form.type === "color" ? "#0f766e" : "",
+                      },
+                    ])
+                  }
                 >
                   <Plus /> {tr("Ajouter une valeur", "إضافة قيمة")}
                 </Button>
               </div>
               {options.length === 0 && (
                 <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
-                  {tr("Aucune valeur. Ex. S, M, L, XL — ou Noir, Blanc.", "لا توجد قيم. مثلاً S، M، L — أو أسود، أبيض.")}
+                  {tr(
+                    "Aucune valeur. Ex. S, M, L, XL — ou Noir, Blanc.",
+                    "لا توجد قيم. مثلاً S، M، L — أو أسود، أبيض.",
+                  )}
                 </p>
               )}
               <ul className="space-y-2">
                 {options.map((o, i) => (
                   <li key={o.id ?? `new-${i}`} className="flex items-center gap-2">
-                    <button type="button" className="text-muted-foreground hover:text-foreground disabled:opacity-30" disabled={i === 0} onClick={() => moveUp(i)} aria-label={tr("Monter", "إلى الأعلى")}>
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                      disabled={i === 0}
+                      onClick={() => moveUp(i)}
+                      aria-label={tr("Monter", "إلى الأعلى")}
+                    >
                       <ArrowUp className="h-4 w-4" />
                     </button>
                     {form.type === "color" && (
@@ -270,10 +415,36 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
                         aria-label={tr("Couleur", "اللون")}
                       />
                     )}
-                    <Input className="min-w-0 flex-1" placeholder={tr("Valeur *", "القيمة *")} maxLength={80} value={o.value} onChange={(e) => updateOption(i, { value: e.target.value })} />
-                    <Input className="min-w-0 flex-1" placeholder={tr("Libellé FR", "التسمية بالفرنسية")} maxLength={80} value={o.label_fr} onChange={(e) => updateOption(i, { label_fr: e.target.value })} />
-                    <Input className="min-w-0 flex-1" dir="rtl" placeholder={tr("Libellé AR", "التسمية بالعربية")} maxLength={80} value={o.label_ar} onChange={(e) => updateOption(i, { label_ar: e.target.value })} />
-                    <Button type="button" size="icon" variant="ghost" className="shrink-0 text-destructive" onClick={() => setOptions((list) => list.filter((_, idx) => idx !== i))} aria-label={tr("Supprimer", "حذف")}>
+                    <Input
+                      className="min-w-0 flex-1"
+                      placeholder={tr("Valeur *", "القيمة *")}
+                      maxLength={80}
+                      value={o.value}
+                      onChange={(e) => updateOption(i, { value: e.target.value })}
+                    />
+                    <Input
+                      className="min-w-0 flex-1"
+                      placeholder={tr("Libellé FR", "التسمية بالفرنسية")}
+                      maxLength={80}
+                      value={o.label_fr}
+                      onChange={(e) => updateOption(i, { label_fr: e.target.value })}
+                    />
+                    <Input
+                      className="min-w-0 flex-1"
+                      dir="rtl"
+                      placeholder={tr("Libellé AR", "التسمية بالعربية")}
+                      maxLength={80}
+                      value={o.label_ar}
+                      onChange={(e) => updateOption(i, { label_ar: e.target.value })}
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="shrink-0 text-destructive"
+                      onClick={() => setOptions((list) => list.filter((_, idx) => idx !== i))}
+                      aria-label={tr("Supprimer", "حذف")}
+                    >
                       <Trash2 />
                     </Button>
                   </li>
@@ -283,7 +454,9 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
           )}
         </form>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>{tr("Annuler", "إلغاء")}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {tr("Annuler", "إلغاء")}
+          </Button>
           <Button form="attribute-form" disabled={save.isPending}>
             {save.isPending && <Loader2 className="animate-spin" />}
             {tr("Enregistrer", "حفظ")}

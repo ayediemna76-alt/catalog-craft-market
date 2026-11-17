@@ -19,7 +19,10 @@ export function parseFilters(f: string | undefined): Record<string, string[]> {
   for (const part of f.split(";")) {
     const [attr, opts] = part.split(":");
     if (!attr || !opts || !UUID.test(attr)) continue;
-    const ids = opts.split(",").filter((o) => UUID.test(o)).slice(0, 30);
+    const ids = opts
+      .split(",")
+      .filter((o) => UUID.test(o))
+      .slice(0, 30);
     if (ids.length) out[attr] = ids;
   }
   return out;
@@ -41,7 +44,8 @@ export function validateShopSearch(s: Record<string, unknown>): ShopSearch {
   const out: ShopSearch = {};
   if (typeof s["c"] === "string" && s["c"]) out.c = s["c"].slice(0, 120);
   if (typeof s["q"] === "string" && s["q"].trim()) out.q = s["q"].slice(0, 120);
-  if (typeof s["sort"] === "string" && (SHOP_SORTS as readonly string[]).includes(s["sort"])) out.sort = s["sort"] as ShopSort;
+  if (typeof s["sort"] === "string" && (SHOP_SORTS as readonly string[]).includes(s["sort"]))
+    out.sort = s["sort"] as ShopSort;
   const page = num(s["page"]);
   if (page && page >= 1) out.page = Math.min(Math.floor(page), 500);
   const min = num(s["min"]);

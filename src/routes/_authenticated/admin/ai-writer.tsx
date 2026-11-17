@@ -11,9 +11,15 @@ export const Route = createFileRoute("/_authenticated/admin/ai-writer")({
   head: () => ({
     meta: [
       { title: "Rédaction IA — weshop admin" },
-      { name: "description", content: "Générez des descriptions produit prêtes à publier à partir des caractéristiques." },
+      {
+        name: "description",
+        content: "Générez des descriptions produit prêtes à publier à partir des caractéristiques.",
+      },
       { property: "og:title", content: "Rédaction IA — weshop admin" },
-      { property: "og:description", content: "Assistant de rédaction de descriptions produit weshop." },
+      {
+        property: "og:description",
+        content: "Assistant de rédaction de descriptions produit weshop.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -30,10 +36,20 @@ function AiWriterPage() {
       <PageHeader
         icon={Sparkles}
         title={tr("Rédaction IA", "التحرير بالذكاء الاصطناعي")}
-        description={tr("Saisissez les caractéristiques d'un produit et obtenez une description prête à publier, en français et en arabe.", "أدخل خصائص المنتج واحصل على وصف جاهز للنشر بالفرنسية والعربية.")}
+        description={tr(
+          "Saisissez les caractéristiques d'un produit et obtenez une description prête à publier, en français et en arabe.",
+          "أدخل خصائص المنتج واحصل على وصف جاهز للنشر بالفرنسية والعربية.",
+        )}
       />
       {!isAdmin ? (
-        <EmptyState icon={ShieldAlert} title={tr("Réservé aux administrateurs", "مخصص للمسؤولين")} description={tr("Demandez à un administrateur de vous donner l'accès.", "اطلب من المسؤول منحك الصلاحية.")} />
+        <EmptyState
+          icon={ShieldAlert}
+          title={tr("Réservé aux administrateurs", "مخصص للمسؤولين")}
+          description={tr(
+            "Demandez à un administrateur de vous donner l'accès.",
+            "اطلب من المسؤول منحك الصلاحية.",
+          )}
+        />
       ) : (
         <Tabs defaultValue="generate">
           <TabsList>

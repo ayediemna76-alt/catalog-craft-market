@@ -19,11 +19,18 @@ function one<T>(v: T | T[] | null | undefined): T | null {
 }
 
 export async function fetchCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
-  const { data, error } = await supabase.rpc("get_category_attributes", { _category_id: categoryId });
+  const { data, error } = await supabase.rpc("get_category_attributes", {
+    _category_id: categoryId,
+  });
   if (error) throw error;
   const ids = (data ?? []).map((a) => a.id);
   const { data: options, error: oErr } = ids.length
-    ? await supabase.from("category_attribute_options").select("*").in("attribute_id", ids).order("display_order").order("value")
+    ? await supabase
+        .from("category_attribute_options")
+        .select("*")
+        .in("attribute_id", ids)
+        .order("display_order")
+        .order("value")
     : { data: [], error: null };
   if (oErr) throw oErr;
   return (data ?? []).map((a) => ({
@@ -60,7 +67,9 @@ export async function fetchProductForEdit(id: string) {
         ...v,
         cost: one(v.variant_costs)?.cost ?? 0,
         stock: one(v.inventory)?.available ?? 0,
-        options: Object.fromEntries((v.variant_attribute_values ?? []).map((x) => [x.attribute_id, x.option_id])) as Record<string, string>,
+        options: Object.fromEntries(
+          (v.variant_attribute_values ?? []).map((x) => [x.attribute_id, x.option_id]),
+        ) as Record<string, string>,
       })),
   };
 }

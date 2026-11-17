@@ -3,7 +3,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, FolderPlus, FolderTree, Pencil, Plus, Search, SlidersHorizontal, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  FolderPlus,
+  FolderTree,
+  Pencil,
+  Plus,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -22,7 +32,12 @@ import {
 import { EmptyState, ErrorState, PageHeader } from "@/components/admin/AdminShell";
 import { CategoryDialog } from "@/components/admin/categories/CategoryDialog";
 import { AttributeDialog } from "@/components/admin/categories/AttributeDialog";
-import { ATTRIBUTE_TYPES, categoryPath, type AttributeWithOptions, type Category } from "@/components/admin/categories/types";
+import {
+  ATTRIBUTE_TYPES,
+  categoryPath,
+  type AttributeWithOptions,
+  type Category,
+} from "@/components/admin/categories/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { pickLocale, useI18n } from "@/lib/i18n";
@@ -36,7 +51,10 @@ export const Route = createFileRoute("/_authenticated/admin/categories")({
   head: () => ({
     meta: [
       { title: "Catégories & attributs — weshop admin" },
-      { name: "description", content: "Gérez l'arborescence des catégories et leurs attributs dynamiques." },
+      {
+        name: "description",
+        content: "Gérez l'arborescence des catégories et leurs attributs dynamiques.",
+      },
       { property: "og:title", content: "Catégories & attributs — weshop admin" },
       { property: "og:description", content: "Administration du catalogue weshop." },
       { property: "og:type", content: "website" },
@@ -51,7 +69,11 @@ function useCategories() {
   return useQuery({
     queryKey: ["admin", "categories"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").order("display_order").order("name_fr");
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("display_order")
+        .order("name_fr");
       if (error) throw error;
       return data as Category[];
     },
@@ -69,7 +91,16 @@ type TreeProps = {
   forceOpen: boolean;
 };
 
-function TreeNode({ node, all, depth, selectedId, onSelect, expanded, toggle, forceOpen }: TreeProps) {
+function TreeNode({
+  node,
+  all,
+  depth,
+  selectedId,
+  onSelect,
+  expanded,
+  toggle,
+  forceOpen,
+}: TreeProps) {
   const { locale } = useI18n();
   const kids = all.filter((c) => c.parent_id === node.id);
   const open = forceOpen || expanded.has(node.id);
@@ -84,14 +115,31 @@ function TreeNode({ node, all, depth, selectedId, onSelect, expanded, toggle, fo
       >
         <button
           type="button"
-          className={cn("grid h-5 w-5 place-items-center rounded text-muted-foreground", !kids.length && "invisible")}
+          className={cn(
+            "grid h-5 w-5 place-items-center rounded text-muted-foreground",
+            !kids.length && "invisible",
+          )}
           onClick={() => toggle(node.id)}
           aria-label={open ? "Replier" : "Déplier"}
         >
-          {open ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />}
+          {open ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+          )}
         </button>
-        <button type="button" className="flex min-w-0 flex-1 items-center gap-2 text-start" onClick={() => onSelect(node.id)}>
-          <span className={cn("truncate", !node.is_active && "text-muted-foreground line-through decoration-muted-foreground/50")}>
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 items-center gap-2 text-start"
+          onClick={() => onSelect(node.id)}
+        >
+          <span
+            className={cn(
+              "truncate",
+              !node.is_active &&
+                "text-muted-foreground line-through decoration-muted-foreground/50",
+            )}
+          >
             {pickLocale(node, "name", locale)}
           </span>
           {kids.length > 0 && <span className="text-xs text-muted-foreground">{kids.length}</span>}
@@ -100,7 +148,17 @@ function TreeNode({ node, all, depth, selectedId, onSelect, expanded, toggle, fo
       {open && kids.length > 0 && (
         <ul>
           {kids.map((k) => (
-            <TreeNode key={k.id} node={k} all={all} depth={depth + 1} selectedId={selectedId} onSelect={onSelect} expanded={expanded} toggle={toggle} forceOpen={forceOpen} />
+            <TreeNode
+              key={k.id}
+              node={k}
+              all={all}
+              depth={depth + 1}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              expanded={expanded}
+              toggle={toggle}
+              forceOpen={forceOpen}
+            />
           ))}
         </ul>
       )}
@@ -116,9 +174,13 @@ function CategoriesAdminPage() {
   const q = useCategories();
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [dialog, setDialog] = useState<{ open: boolean; editing: Category | null; parentId: string | null }>({ open: false, editing: null, parentId: null });
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    editing: Category | null;
+    parentId: string | null;
+  }>({ open: false, editing: null, parentId: null });
 
-  const all = q.data ?? [];
+  const all = useMemo(() => q.data ?? [], [q.data]);
   const select = (id: string | undefined) => navigate({ search: { c: id }, replace: true });
 
   const visible = useMemo(() => {
@@ -126,7 +188,11 @@ function CategoriesAdminPage() {
     const needle = query.trim().toLowerCase();
     const keep = new Set<string>();
     for (const c of all) {
-      if (c.name_fr.toLowerCase().includes(needle) || (c.name_ar ?? "").includes(needle) || c.slug.includes(needle)) {
+      if (
+        c.name_fr.toLowerCase().includes(needle) ||
+        (c.name_ar ?? "").includes(needle) ||
+        c.slug.includes(needle)
+      ) {
         for (const p of categoryPath(all, c.id)) keep.add(p.id);
       }
     }
@@ -150,7 +216,10 @@ function CategoriesAdminPage() {
       <PageHeader
         icon={FolderTree}
         title={tr("Catégories & attributs", "الأقسام والخصائص")}
-        description={tr("Créez n'importe quel univers de produits, sans toucher au code.", "أنشئ أي نوع من المنتجات دون تعديل الشيفرة.")}
+        description={tr(
+          "Créez n'importe quel univers de produits, sans toucher au code.",
+          "أنشئ أي نوع من المنتجات دون تعديل الشيفرة.",
+        )}
         actions={
           isAdmin && (
             <Button onClick={newRoot}>
@@ -188,13 +257,34 @@ function CategoriesAdminPage() {
           <div className="rounded-2xl border bg-card p-3 shadow-card lg:sticky lg:top-20">
             <div className="relative mb-2">
               <Search className="pointer-events-none absolute start-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input className="ps-8" placeholder={tr("Rechercher…", "بحث…")} value={query} onChange={(e) => setQuery(e.target.value)} />
+              <Input
+                className="ps-8"
+                placeholder={tr("Rechercher…", "بحث…")}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
             </div>
             <ul className="max-h-[65vh] overflow-y-auto">
-              {visible.filter((c) => !c.parent_id).map((c) => (
-                <TreeNode key={c.id} node={c} all={visible} depth={0} selectedId={selectedId} onSelect={select} expanded={expanded} toggle={toggle} forceOpen={!!query.trim()} />
-              ))}
-              {visible.length === 0 && <li className="p-4 text-center text-sm text-muted-foreground">{tr("Aucun résultat", "لا نتائج")}</li>}
+              {visible
+                .filter((c) => !c.parent_id)
+                .map((c) => (
+                  <TreeNode
+                    key={c.id}
+                    node={c}
+                    all={visible}
+                    depth={0}
+                    selectedId={selectedId}
+                    onSelect={select}
+                    expanded={expanded}
+                    toggle={toggle}
+                    forceOpen={!!query.trim()}
+                  />
+                ))}
+              {visible.length === 0 && (
+                <li className="p-4 text-center text-sm text-muted-foreground">
+                  {tr("Aucun résultat", "لا نتائج")}
+                </li>
+              )}
             </ul>
           </div>
 
@@ -203,7 +293,9 @@ function CategoriesAdminPage() {
               key={selected.id}
               category={selected}
               all={all}
-              onEdit={() => setDialog({ open: true, editing: selected, parentId: selected.parent_id })}
+              onEdit={() =>
+                setDialog({ open: true, editing: selected, parentId: selected.parent_id })
+              }
               onAddChild={() => {
                 setExpanded((s) => new Set(s).add(selected.id));
                 setDialog({ open: true, editing: null, parentId: selected.id });
@@ -215,7 +307,10 @@ function CategoriesAdminPage() {
             <EmptyState
               icon={SlidersHorizontal}
               title={tr("Sélectionnez une catégorie", "اختر قسماً")}
-              description={tr("Choisissez une catégorie à gauche pour voir ses sous-catégories et attributs.", "اختر قسماً لعرض أقسامه الفرعية وخصائصه.")}
+              description={tr(
+                "Choisissez une catégorie à gauche pour voir ses sous-catégories et attributs.",
+                "اختر قسماً لعرض أقسامه الفرعية وخصائصه.",
+              )}
             />
           )}
         </div>
@@ -247,7 +342,10 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
   const { isAdmin } = useAuth();
   const qc = useQueryClient();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [attrDialog, setAttrDialog] = useState<{ open: boolean; editing: AttributeWithOptions | null }>({ open: false, editing: null });
+  const [attrDialog, setAttrDialog] = useState<{
+    open: boolean;
+    editing: AttributeWithOptions | null;
+  }>({ open: false, editing: null });
   const [attrToDelete, setAttrToDelete] = useState<AttributeWithOptions | null>(null);
 
   const path = categoryPath(all, category.id);
@@ -280,7 +378,10 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
 
   const toggleActive = useMutation({
     mutationFn: async (is_active: boolean) => {
-      const { error } = await supabase.from("categories").update({ is_active }).eq("id", category.id);
+      const { error } = await supabase
+        .from("categories")
+        .update({ is_active })
+        .eq("id", category.id);
       if (error) throw error;
     },
     onSuccess: invalidateCats,
@@ -318,37 +419,82 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
   };
 
   const renderAttr = (a: AttributeWithOptions, readOnly: boolean) => {
-    const opts = [...a.category_attribute_options].sort((x, y) => x.display_order - y.display_order);
+    const opts = [...a.category_attribute_options].sort(
+      (x, y) => x.display_order - y.display_order,
+    );
     return (
       <div className="flex flex-wrap items-start gap-3 px-5 py-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-medium">{pickLocale(a, "name", locale)}</span>
-            <code className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">{a.code}</code>
-            <Badge variant="outline" className="font-normal">{typeLabel(a.type)}{a.unit ? ` · ${a.unit}` : ""}</Badge>
-            {a.is_required && <Badge className="bg-highlight/10 font-normal text-highlight hover:bg-highlight/10">{tr("Obligatoire", "إجباري")}</Badge>}
-            {a.is_variant && <Badge className="bg-primary-soft font-normal text-primary hover:bg-primary-soft">{tr("Variante", "متغير")}</Badge>}
-            {a.is_filterable && <Badge variant="secondary" className="font-normal">{tr("Filtre", "مرشح")}</Badge>}
-            {a.is_searchable && <Badge variant="secondary" className="font-normal">{tr("Recherche", "بحث")}</Badge>}
+            <code className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
+              {a.code}
+            </code>
+            <Badge variant="outline" className="font-normal">
+              {typeLabel(a.type)}
+              {a.unit ? ` · ${a.unit}` : ""}
+            </Badge>
+            {a.is_required && (
+              <Badge className="bg-highlight/10 font-normal text-highlight hover:bg-highlight/10">
+                {tr("Obligatoire", "إجباري")}
+              </Badge>
+            )}
+            {a.is_variant && (
+              <Badge className="bg-primary-soft font-normal text-primary hover:bg-primary-soft">
+                {tr("Variante", "متغير")}
+              </Badge>
+            )}
+            {a.is_filterable && (
+              <Badge variant="secondary" className="font-normal">
+                {tr("Filtre", "مرشح")}
+              </Badge>
+            )}
+            {a.is_searchable && (
+              <Badge variant="secondary" className="font-normal">
+                {tr("Recherche", "بحث")}
+              </Badge>
+            )}
           </div>
           {opts.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {opts.slice(0, 14).map((o) => (
-                <span key={o.id} className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs">
-                  {o.color_hex && <span className="h-3 w-3 rounded-full border" style={{ backgroundColor: o.color_hex }} />}
+                <span
+                  key={o.id}
+                  className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs"
+                >
+                  {o.color_hex && (
+                    <span
+                      className="h-3 w-3 rounded-full border"
+                      style={{ backgroundColor: o.color_hex }}
+                    />
+                  )}
                   {(locale === "ar" ? o.label_ar : o.label_fr) || o.value}
                 </span>
               ))}
-              {opts.length > 14 && <span className="text-xs text-muted-foreground">+{opts.length - 14}</span>}
+              {opts.length > 14 && (
+                <span className="text-xs text-muted-foreground">+{opts.length - 14}</span>
+              )}
             </div>
           )}
         </div>
         {!readOnly && isAdmin && (
           <div className="flex gap-1">
-            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setAttrDialog({ open: true, editing: a })} aria-label={tr("Modifier", "تعديل")}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={() => setAttrDialog({ open: true, editing: a })}
+              aria-label={tr("Modifier", "تعديل")}
+            >
               <Pencil />
             </Button>
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => setAttrToDelete(a)} aria-label={tr("Supprimer", "حذف")}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 text-destructive"
+              onClick={() => setAttrToDelete(a)}
+              aria-label={tr("Supprimer", "حذف")}
+            >
               <Trash2 />
             </Button>
           </div>
@@ -364,7 +510,13 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
           {path.map((p, i) => (
             <span key={p.id} className="flex items-center gap-1">
               {i > 0 && <ChevronRight className="h-3 w-3 rtl:-scale-x-100" />}
-              <button type="button" className="hover:text-foreground" onClick={() => onSelect(p.id)}>{pickLocale(p, "name", locale)}</button>
+              <button
+                type="button"
+                className="hover:text-foreground"
+                onClick={() => onSelect(p.id)}
+              >
+                {pickLocale(p, "name", locale)}
+              </button>
             </span>
           ))}
         </nav>
@@ -373,23 +525,49 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
             {category.image_url ? (
               <img src={category.image_url} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="grid h-full w-full place-items-center font-display text-3xl font-bold text-primary/30">{category.name_fr.charAt(0)}</span>
+              <span className="grid h-full w-full place-items-center font-display text-3xl font-bold text-primary/30">
+                {category.name_fr.charAt(0)}
+              </span>
             )}
           </div>
           <div className="min-w-0 flex-1">
             <h2 className="text-xl font-semibold">{category.name_fr}</h2>
-            {category.name_ar && <p className="text-sm text-muted-foreground" dir="rtl">{category.name_ar}</p>}
-            <p className="mt-1 text-xs text-muted-foreground" dir="ltr">/{category.slug}</p>
-            {category.description_fr && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{category.description_fr}</p>}
+            {category.name_ar && (
+              <p className="text-sm text-muted-foreground" dir="rtl">
+                {category.name_ar}
+              </p>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
+              /{category.slug}
+            </p>
+            {category.description_fr && (
+              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                {category.description_fr}
+              </p>
+            )}
           </div>
           {isAdmin && (
             <div className="flex flex-wrap items-center gap-2">
               <label className="flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm">
-                <Switch checked={category.is_active} disabled={toggleActive.isPending} onCheckedChange={(v) => toggleActive.mutate(v)} />
+                <Switch
+                  checked={category.is_active}
+                  disabled={toggleActive.isPending}
+                  onCheckedChange={(v) => toggleActive.mutate(v)}
+                />
                 {category.is_active ? tr("Active", "نشط") : tr("Inactive", "غير نشط")}
               </label>
-              <Button variant="outline" size="sm" onClick={onEdit}><Pencil /> {tr("Modifier", "تعديل")}</Button>
-              <Button variant="outline" size="sm" className="text-destructive" onClick={() => setConfirmDelete(true)} aria-label={tr("Supprimer", "حذف")}><Trash2 /></Button>
+              <Button variant="outline" size="sm" onClick={onEdit}>
+                <Pencil /> {tr("Modifier", "تعديل")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive"
+                onClick={() => setConfirmDelete(true)}
+                aria-label={tr("Supprimer", "حذف")}
+              >
+                <Trash2 />
+              </Button>
             </div>
           )}
         </div>
@@ -399,7 +577,12 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
         <div className="flex items-center justify-between gap-3 border-b px-5 py-4">
           <div>
             <p className="font-semibold">{tr("Attributs", "الخصائص")}</p>
-            <p className="text-xs text-muted-foreground">{tr("Ils construisent automatiquement le formulaire produit et les filtres.", "تبني تلقائياً استمارة المنتج والمرشحات.")}</p>
+            <p className="text-xs text-muted-foreground">
+              {tr(
+                "Ils construisent automatiquement le formulaire produit et les filtres.",
+                "تبني تلقائياً استمارة المنتج والمرشحات.",
+              )}
+            </p>
           </div>
           {isAdmin && (
             <Button size="sm" onClick={() => setAttrDialog({ open: true, editing: null })}>
@@ -408,27 +591,43 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
           )}
         </div>
         {attrs.isLoading ? (
-          <div className="space-y-2 p-5"><Skeleton className="h-12" /><Skeleton className="h-12" /></div>
+          <div className="space-y-2 p-5">
+            <Skeleton className="h-12" />
+            <Skeleton className="h-12" />
+          </div>
         ) : attrs.error ? (
-          <div className="p-5"><ErrorState error={attrs.error} onRetry={() => attrs.refetch()} /></div>
+          <div className="p-5">
+            <ErrorState error={attrs.error} onRetry={() => attrs.refetch()} />
+          </div>
         ) : (
           <>
             {own.length === 0 ? (
               <p className="px-5 py-6 text-sm text-muted-foreground">
-                {tr("Aucun attribut propre. Ex. Taille, Couleur, Matière, Capacité, Classe énergétique…", "لا توجد خصائص. مثلاً المقاس، اللون، الخامة، السعة…")}
+                {tr(
+                  "Aucun attribut propre. Ex. Taille, Couleur, Matière, Capacité, Classe énergétique…",
+                  "لا توجد خصائص. مثلاً المقاس، اللون، الخامة، السعة…",
+                )}
               </p>
             ) : (
-              <ul className="divide-y">{own.map((a) => <li key={a.id}>{renderAttr(a, false)}</li>)}</ul>
+              <ul className="divide-y">
+                {own.map((a) => (
+                  <li key={a.id}>{renderAttr(a, false)}</li>
+                ))}
+              </ul>
             )}
             {inherited.length > 0 && (
               <div className="border-t bg-muted/30">
-                <p className="px-5 pt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Hérités des catégories parentes", "موروثة من الأقسام الأم")}</p>
+                <p className="px-5 pt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {tr("Hérités des catégories parentes", "موروثة من الأقسام الأم")}
+                </p>
                 <ul className="divide-y opacity-80">
                   {inherited.map((a) => {
                     const from = all.find((c) => c.id === a.category_id);
                     return (
                       <li key={a.id}>
-                        <p className="px-5 pt-2 text-[11px] text-muted-foreground">{tr("de", "من")} {from ? pickLocale(from, "name", locale) : ""}</p>
+                        <p className="px-5 pt-2 text-[11px] text-muted-foreground">
+                          {tr("de", "من")} {from ? pickLocale(from, "name", locale) : ""}
+                        </p>
                         {renderAttr(a, true)}
                       </li>
                     );
@@ -442,7 +641,10 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
 
       <div className="rounded-2xl border bg-card shadow-card">
         <div className="flex items-center justify-between gap-3 border-b px-5 py-4">
-          <p className="font-semibold">{tr("Sous-catégories", "الأقسام الفرعية")} <span className="text-muted-foreground">({children.length})</span></p>
+          <p className="font-semibold">
+            {tr("Sous-catégories", "الأقسام الفرعية")}{" "}
+            <span className="text-muted-foreground">({children.length})</span>
+          </p>
           {isAdmin && (
             <Button size="sm" variant="outline" onClick={onAddChild}>
               <FolderPlus /> {tr("Sous-catégorie", "قسم فرعي")}
@@ -450,14 +652,26 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
           )}
         </div>
         {children.length === 0 ? (
-          <p className="px-5 py-6 text-sm text-muted-foreground">{tr("Aucune sous-catégorie.", "لا توجد أقسام فرعية.")}</p>
+          <p className="px-5 py-6 text-sm text-muted-foreground">
+            {tr("Aucune sous-catégorie.", "لا توجد أقسام فرعية.")}
+          </p>
         ) : (
           <ul className="grid gap-2 p-4 sm:grid-cols-2">
             {children.map((c) => (
               <li key={c.id}>
-                <button type="button" onClick={() => onSelect(c.id)} className="flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-start text-sm hover:bg-muted">
-                  <span className={cn(!c.is_active && "text-muted-foreground")}>{pickLocale(c, "name", locale)}</span>
-                  {!c.is_active && <Badge variant="outline" className="font-normal">{tr("Inactive", "غير نشط")}</Badge>}
+                <button
+                  type="button"
+                  onClick={() => onSelect(c.id)}
+                  className="flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-start text-sm hover:bg-muted"
+                >
+                  <span className={cn(!c.is_active && "text-muted-foreground")}>
+                    {pickLocale(c, "name", locale)}
+                  </span>
+                  {!c.is_active && (
+                    <Badge variant="outline" className="font-normal">
+                      {tr("Inactive", "غير نشط")}
+                    </Badge>
+                  )}
                 </button>
               </li>
             ))}
@@ -476,7 +690,9 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{tr("Supprimer cette catégorie ?", "حذف هذا القسم؟")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {tr("Supprimer cette catégorie ?", "حذف هذا القسم؟")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {tr(
                 "Ses attributs seront supprimés. Impossible si elle contient des sous-catégories ou des produits — désactivez-la plutôt.",
@@ -486,7 +702,10 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{tr("Annuler", "إلغاء")}</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => remove.mutate()}>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => remove.mutate()}
+            >
               {tr("Supprimer", "حذف")}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -496,9 +715,14 @@ function CategoryDetail({ category, all, onEdit, onAddChild, onDeleted, onSelect
       <AlertDialog open={!!attrToDelete} onOpenChange={(o) => !o && setAttrToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{tr("Supprimer l'attribut", "حذف الخاصية")} « {attrToDelete?.name_fr} » ?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {tr("Supprimer l'attribut", "حذف الخاصية")} « {attrToDelete?.name_fr} » ?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {tr("Les valeurs saisies sur les produits pour cet attribut seront aussi supprimées.", "ستحذف القيم المدخلة على المنتجات لهذه الخاصية أيضاً.")}
+              {tr(
+                "Les valeurs saisies sur les produits pour cet attribut seront aussi supprimées.",
+                "ستحذف القيم المدخلة على المنتجات لهذه الخاصية أيضاً.",
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

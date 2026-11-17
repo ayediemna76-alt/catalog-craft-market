@@ -23,7 +23,9 @@ export type VariantRow = {
 export type ImageRow = { key: string; id?: string; url: string; storage_path: string | null };
 
 /** Cartesian product of the selected options of each variant attribute. */
-export function combinations(axes: { id: string; optionIds: string[] }[]): Record<string, string>[] {
+export function combinations(
+  axes: { id: string; optionIds: string[] }[],
+): Record<string, string>[] {
   const used = axes.filter((a) => a.optionIds.length > 0);
   if (!used.length) return [];
   let out: Record<string, string>[] = [{}];

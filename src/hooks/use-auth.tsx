@@ -42,7 +42,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["my-roles", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId!);
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId!);
       if (error) throw error;
       return data.map((r) => r.role as string);
     },

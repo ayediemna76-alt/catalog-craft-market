@@ -1,5 +1,8 @@
 /** Prices are stored in TND with 3 decimals (millimes). */
-export function formatTND(value: number | string | null | undefined, locale: "fr" | "ar" = "fr"): string {
+export function formatTND(
+  value: number | string | null | undefined,
+  locale: "fr" | "ar" = "fr",
+): string {
   const n = typeof value === "string" ? Number(value) : (value ?? 0);
   const formatted = new Intl.NumberFormat(locale === "ar" ? "ar-TN" : "fr-TN", {
     minimumFractionDigits: 3,
@@ -8,7 +11,11 @@ export function formatTND(value: number | string | null | undefined, locale: "fr
   return locale === "ar" ? `${formatted} د.ت` : `${formatted} DT`;
 }
 
-export function formatDate(value: string | Date | null | undefined, locale: "fr" | "ar" = "fr", withTime = false) {
+export function formatDate(
+  value: string | Date | null | undefined,
+  locale: "fr" | "ar" = "fr",
+  withTime = false,
+) {
   if (!value) return "—";
   const d = typeof value === "string" ? new Date(value) : value;
   return new Intl.DateTimeFormat(locale === "ar" ? "ar-TN" : "fr-FR", {
@@ -35,7 +42,10 @@ export function codify(input: string): string {
 
 /** Map database error codes raised by our functions to readable French messages. */
 export function dbErrorMessage(error: unknown): string {
-  const raw = error && typeof error === "object" && "message" in error ? String((error as { message: string }).message) : String(error);
+  const raw =
+    error && typeof error === "object" && "message" in error
+      ? String((error as { message: string }).message)
+      : String(error);
   const map: Record<string, string> = {
     category_cycle: "Une catégorie ne peut pas être sa propre sous-catégorie.",
     category_too_deep: "Arborescence trop profonde.",
@@ -58,14 +68,21 @@ export function dbErrorMessage(error: unknown): string {
     product_variants_sku_key: "Une référence de variante est déjà utilisée par un autre produit.",
     products_sku_key: "Cette référence produit est déjà utilisée.",
     products_slug_key: "Cette adresse web est déjà utilisée par un autre produit.",
+    duplicate_sku: "Cette référence produit est déjà utilisée.",
+    duplicate_slug: "Cette adresse web est déjà utilisée par un autre produit.",
+    product_not_found: "Produit introuvable.",
+    product_in_orders: "Produit déjà commandé : il a été archivé.",
+    invalid_payload: "Certaines données sont invalides. Vérifiez le formulaire.",
   };
   const missing = /missing_required:\s*([^\n"]+)/.exec(raw);
   if (missing) return `Caractéristiques obligatoires manquantes : ${missing[1]!.trim()}.`;
   for (const [code, msg] of Object.entries(map)) if (raw.includes(code)) return msg;
   if (raw.includes("duplicate key") && raw.includes("slug")) return "Ce slug est déjà utilisé.";
-  if (raw.includes("duplicate key") && raw.includes("code")) return "Ce code d'attribut existe déjà dans cette catégorie.";
+  if (raw.includes("duplicate key") && raw.includes("code"))
+    return "Ce code d'attribut existe déjà dans cette catégorie.";
   if (raw.includes("duplicate key")) return "Cette valeur existe déjà.";
-  if (raw.includes("violates foreign key") && raw.includes("categories")) return "Impossible : cette catégorie contient des sous-catégories ou des produits.";
+  if (raw.includes("violates foreign key") && raw.includes("categories"))
+    return "Impossible : cette catégorie contient des sous-catégories ou des produits.";
   if (raw.includes("check constraint")) return "Valeur invalide.";
   return raw;
 }

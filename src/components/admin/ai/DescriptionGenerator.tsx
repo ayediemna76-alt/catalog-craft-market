@@ -9,12 +9,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { generateDescription } from "@/lib/ai-description.functions";
 import type { DescriptionResult } from "@/lib/ai-description.schema";
-import { categoryPath, type AttributeOption, type Category } from "@/components/admin/categories/types";
+import {
+  categoryPath,
+  type AttributeOption,
+  type Category,
+} from "@/components/admin/categories/types";
 import { TARGET_LENGTHS, templatesQueryKey, type DescriptionTemplate } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +68,11 @@ export function DescriptionGenerator({
   const categories = useQuery({
     queryKey: ["admin", "categories"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").order("display_order").order("name_fr");
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("display_order")
+        .order("name_fr");
       if (error) throw error;
       return data as Category[];
     },
@@ -67,12 +81,19 @@ export function DescriptionGenerator({
   const templates = useQuery({
     queryKey: templatesQueryKey,
     queryFn: async () => {
-      const { data, error } = await supabase.from("description_templates").select("*").order("display_order").order("name");
+      const { data, error } = await supabase
+        .from("description_templates")
+        .select("*")
+        .order("display_order")
+        .order("name");
       if (error) throw error;
       return data as DescriptionTemplate[];
     },
   });
-  const activeTemplates = useMemo(() => (templates.data ?? []).filter((t) => t.is_active), [templates.data]);
+  const activeTemplates = useMemo(
+    () => (templates.data ?? []).filter((t) => t.is_active),
+    [templates.data],
+  );
 
   useEffect(() => {
     if (!activeTemplates.length) return;
@@ -83,12 +104,18 @@ export function DescriptionGenerator({
     queryKey: ["admin", "ai-attributes", categoryId],
     enabled: categoryId !== NONE,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_category_attributes", { _category_id: categoryId });
+      const { data, error } = await supabase.rpc("get_category_attributes", {
+        _category_id: categoryId,
+      });
       if (error) throw error;
       const ids = data.map((a) => a.id);
       let options: AttributeOption[] = [];
       if (ids.length) {
-        const res = await supabase.from("category_attribute_options").select("*").in("attribute_id", ids).order("display_order");
+        const res = await supabase
+          .from("category_attribute_options")
+          .select("*")
+          .in("attribute_id", ids)
+          .order("display_order");
         if (res.error) throw res.error;
         options = res.data;
       }
@@ -101,7 +128,9 @@ export function DescriptionGenerator({
 
   const categoryLabel = useMemo(() => {
     if (categoryId === NONE || !categories.data) return null;
-    return categoryPath(categories.data, categoryId).map((c) => c.name_fr).join(" > ");
+    return categoryPath(categories.data, categoryId)
+      .map((c) => c.name_fr)
+      .join(" > ");
   }, [categories.data, categoryId]);
 
   const generateFn = useServerFn(generateDescription);
@@ -123,7 +152,8 @@ export function DescriptionGenerator({
         const label = a.is_variant ? `${a.name_fr} (options disponibles)` : a.name_fr;
         attrs.push({ label, value: text });
       }
-      if (!templateId) throw new Error(tr("Choisissez un modèle de description.", "اختر قالب الوصف."));
+      if (!templateId)
+        throw new Error(tr("Choisissez un modèle de description.", "اختر قالب الوصف."));
       const res = await generateFn({
         data: {
           templateId,
@@ -169,14 +199,24 @@ export function DescriptionGenerator({
         <div>
           <p className="font-semibold">{tr("Caractéristiques du produit", "خصائص المنتج")}</p>
           <p className="text-xs text-muted-foreground">
-            {tr("Plus vous donnez de détails, plus la description sera précise. L'IA n'invente rien.", "كلما أضفت تفاصيل أكثر، كان الوصف أدق. الذكاء الاصطناعي لا يختلق معلومات.")}
+            {tr(
+              "Plus vous donnez de détails, plus la description sera précise. L'IA n'invente rien.",
+              "كلما أضفت تفاصيل أكثر، كان الوصف أدق. الذكاء الاصطناعي لا يختلق معلومات.",
+            )}
           </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="ai-name">{tr("Nom du produit", "اسم المنتج")} *</Label>
-            <Input id="ai-name" required maxLength={150} value={productName} onChange={(e) => setProductName(e.target.value)} placeholder={tr("Ex. T-shirt col rond coton bio", "مثال: قميص قطني")} />
+            <Input
+              id="ai-name"
+              required
+              maxLength={150}
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              placeholder={tr("Ex. T-shirt col rond coton bio", "مثال: قميص قطني")}
+            />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label>{tr("Catégorie", "القسم")}</Label>
@@ -190,12 +230,16 @@ export function DescriptionGenerator({
                   setValues({});
                 }}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={NONE}>{tr("Sans catégorie", "بدون قسم")}</SelectItem>
                   {(categories.data ?? []).map((c) => (
                     <SelectItem key={c.id} value={c.id}>
-                      {categoryPath(categories.data ?? [], c.id).map((p) => (locale === "ar" && p.name_ar ? p.name_ar : p.name_fr)).join(" › ")}
+                      {categoryPath(categories.data ?? [], c.id)
+                        .map((p) => (locale === "ar" && p.name_ar ? p.name_ar : p.name_fr))
+                        .join(" › ")}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -204,19 +248,41 @@ export function DescriptionGenerator({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ai-brand">{tr("Marque", "العلامة")}</Label>
-            <Input id="ai-brand" maxLength={80} value={brand} onChange={(e) => setBrand(e.target.value)} />
+            <Input
+              id="ai-brand"
+              maxLength={80}
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ai-model">{tr("Modèle / référence", "الطراز / المرجع")}</Label>
-            <Input id="ai-model" maxLength={80} value={model} onChange={(e) => setModel(e.target.value)} />
+            <Input
+              id="ai-model"
+              maxLength={80}
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ai-warranty">{tr("Garantie", "الضمان")}</Label>
-            <Input id="ai-warranty" maxLength={120} value={warranty} onChange={(e) => setWarranty(e.target.value)} placeholder={tr("Ex. 1 an", "مثال: سنة")} />
+            <Input
+              id="ai-warranty"
+              maxLength={120}
+              value={warranty}
+              onChange={(e) => setWarranty(e.target.value)}
+              placeholder={tr("Ex. 1 an", "مثال: سنة")}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="ai-audience">{tr("Public visé", "الفئة المستهدفة")}</Label>
-            <Input id="ai-audience" maxLength={160} value={audience} onChange={(e) => setAudience(e.target.value)} placeholder={tr("Ex. Femmes, sportifs…", "مثال: نساء، رياضيون…")} />
+            <Input
+              id="ai-audience"
+              maxLength={160}
+              value={audience}
+              onChange={(e) => setAudience(e.target.value)}
+              placeholder={tr("Ex. Femmes, sportifs…", "مثال: نساء، رياضيون…")}
+            />
           </div>
         </div>
 
@@ -226,13 +292,25 @@ export function DescriptionGenerator({
             {attributes.isLoading ? (
               <Skeleton className="h-24" />
             ) : attributes.error ? (
-              <p className="text-sm text-destructive">{tr("Impossible de charger les attributs.", "تعذر تحميل الخصائص.")}</p>
+              <p className="text-sm text-destructive">
+                {tr("Impossible de charger les attributs.", "تعذر تحميل الخصائص.")}
+              </p>
             ) : !attributes.data?.length ? (
-              <p className="text-sm text-muted-foreground">{tr("Cette catégorie n'a pas encore d'attributs.", "هذا القسم لا يحتوي على خصائص بعد.")}</p>
+              <p className="text-sm text-muted-foreground">
+                {tr(
+                  "Cette catégorie n'a pas encore d'attributs.",
+                  "هذا القسم لا يحتوي على خصائص بعد.",
+                )}
+              </p>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {attributes.data.map((a) => (
-                  <AttributeField key={a.id} attr={a} value={values[a.id]} onChange={(v) => setVal(a.id, v)} />
+                  <AttributeField
+                    key={a.id}
+                    attr={a}
+                    value={values[a.id]}
+                    onChange={(v) => setVal(a.id, v)}
+                  />
                 ))}
               </div>
             )}
@@ -240,14 +318,19 @@ export function DescriptionGenerator({
         )}
 
         <div className="space-y-1.5">
-          <Label htmlFor="ai-highlights">{tr("Points forts et détails libres", "نقاط القوة وتفاصيل إضافية")}</Label>
+          <Label htmlFor="ai-highlights">
+            {tr("Points forts et détails libres", "نقاط القوة وتفاصيل إضافية")}
+          </Label>
           <Textarea
             id="ai-highlights"
             rows={4}
             maxLength={1500}
             value={highlights}
             onChange={(e) => setHighlights(e.target.value)}
-            placeholder={tr("Matière, usage, entretien, ce qui le rend unique…", "الخامة، الاستعمال، العناية، ما يميزه…")}
+            placeholder={tr(
+              "Matière, usage, entretien, ce qui le rend unique…",
+              "الخامة، الاستعمال، العناية، ما يميزه…",
+            )}
           />
         </div>
 
@@ -257,23 +340,36 @@ export function DescriptionGenerator({
             {templates.isLoading ? (
               <Skeleton className="h-9" />
             ) : activeTemplates.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{tr("Aucun modèle actif. Créez-en un dans l'onglet Modèles.", "لا يوجد قالب مفعّل. أنشئ واحداً في تبويب القوالب.")}</p>
+              <p className="text-sm text-muted-foreground">
+                {tr(
+                  "Aucun modèle actif. Créez-en un dans l'onglet Modèles.",
+                  "لا يوجد قالب مفعّل. أنشئ واحداً في تبويب القوالب.",
+                )}
+              </p>
             ) : (
               <Select value={templateId} onValueChange={setTemplateId}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {activeTemplates.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             )}
-            {selectedTemplate?.summary && <p className="text-xs text-muted-foreground">{selectedTemplate.summary}</p>}
+            {selectedTemplate?.summary && (
+              <p className="text-xs text-muted-foreground">{selectedTemplate.summary}</p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label>{tr("Langues", "اللغات")}</Label>
             <Select value={languages} onValueChange={(v) => setLanguages(v as Languages)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="both">{tr("Français + arabe", "الفرنسية + العربية")}</SelectItem>
                 <SelectItem value="fr">{tr("Français seulement", "الفرنسية فقط")}</SelectItem>
@@ -282,7 +378,8 @@ export function DescriptionGenerator({
             </Select>
             {selectedTemplate && (
               <p className="text-xs text-muted-foreground">
-                {tr("Longueur :", "الطول:")} {(() => {
+                {tr("Longueur :", "الطول:")}{" "}
+                {(() => {
                   const l = TARGET_LENGTHS.find((x) => x.value === selectedTemplate.target_length);
                   return l ? tr(l.fr, l.ar) : selectedTemplate.target_length;
                 })()}
@@ -291,13 +388,28 @@ export function DescriptionGenerator({
           </div>
         </div>
 
-        <Button type="submit" className="w-full" size="lg" disabled={generate.isPending || !templateId}>
+        <Button
+          type="submit"
+          className="w-full"
+          size="lg"
+          disabled={generate.isPending || !templateId}
+        >
           {generate.isPending ? <Loader2 className="animate-spin" /> : <Wand2 />}
-          {generate.isPending ? tr("Rédaction en cours…", "جارٍ التحرير…") : result ? tr("Régénérer", "إعادة الإنشاء") : tr("Générer la description", "إنشاء الوصف")}
+          {generate.isPending
+            ? tr("Rédaction en cours…", "جارٍ التحرير…")
+            : result
+              ? tr("Régénérer", "إعادة الإنشاء")
+              : tr("Générer la description", "إنشاء الوصف")}
         </Button>
       </form>
 
-      <ResultPanel result={result} pending={generate.isPending} onChange={setResult} onApply={onApply} onReset={() => setResult(null)} />
+      <ResultPanel
+        result={result}
+        pending={generate.isPending}
+        onChange={setResult}
+        onApply={onApply}
+        onReset={() => setResult(null)}
+      />
     </div>
   );
 }
@@ -313,18 +425,32 @@ type AttrRow = {
   options: AttributeOption[];
 };
 
-function AttributeField({ attr, value, onChange }: { attr: AttrRow; value: AttrValue; onChange: (v: AttrValue) => void }) {
+function AttributeField({
+  attr,
+  value,
+  onChange,
+}: {
+  attr: AttrRow;
+  value: AttrValue;
+  onChange: (v: AttrValue) => void;
+}) {
   const { tr, locale } = useI18n();
   const label = locale === "ar" && attr.name_ar ? attr.name_ar : attr.name_fr;
-  const optLabel = (o: AttributeOption) => (locale === "ar" && o.label_ar ? o.label_ar : o.label_fr || o.value);
+  const optLabel = (o: AttributeOption) =>
+    locale === "ar" && o.label_ar ? o.label_ar : o.label_fr || o.value;
   const multi = attr.type === "multi_select" || attr.is_variant;
 
   if (attr.type === "boolean") {
     return (
       <div className="flex items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2">
         <Label className="text-sm">{label}</Label>
-        <Select value={value === undefined ? NONE : value ? "yes" : "no"} onValueChange={(v) => onChange(v === NONE ? undefined : v === "yes")}>
-          <SelectTrigger className="h-8 w-28"><SelectValue /></SelectTrigger>
+        <Select
+          value={value === undefined ? NONE : value ? "yes" : "no"}
+          onValueChange={(v) => onChange(v === NONE ? undefined : v === "yes")}
+        >
+          <SelectTrigger className="h-8 w-28">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={NONE}>—</SelectItem>
             <SelectItem value="yes">{tr("Oui", "نعم")}</SelectItem>
@@ -341,7 +467,11 @@ function AttributeField({ attr, value, onChange }: { attr: AttrRow; value: AttrV
       <div className="space-y-1.5 sm:col-span-2">
         <Label className="flex items-center gap-2 text-sm">
           {label}
-          {attr.is_variant && <Badge variant="secondary" className="text-[10px]">{tr("Options disponibles", "الخيارات المتوفرة")}</Badge>}
+          {attr.is_variant && (
+            <Badge variant="secondary" className="text-[10px]">
+              {tr("Options disponibles", "الخيارات المتوفرة")}
+            </Badge>
+          )}
         </Label>
         <div className="flex flex-wrap gap-1.5">
           {attr.options.map((o) => {
@@ -350,14 +480,21 @@ function AttributeField({ attr, value, onChange }: { attr: AttrRow; value: AttrV
               <button
                 type="button"
                 key={o.id}
-                onClick={() => onChange(on ? selected.filter((x) => x !== o.value) : [...selected, o.value])}
+                onClick={() =>
+                  onChange(on ? selected.filter((x) => x !== o.value) : [...selected, o.value])
+                }
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors",
                   on ? "border-primary bg-primary-soft text-primary" : "bg-card hover:bg-muted",
                 )}
                 aria-pressed={on}
               >
-                {o.color_hex && <span className="h-3 w-3 rounded-full border" style={{ backgroundColor: o.color_hex }} />}
+                {o.color_hex && (
+                  <span
+                    className="h-3 w-3 rounded-full border"
+                    style={{ backgroundColor: o.color_hex }}
+                  />
+                )}
                 {optLabel(o)}
                 {on && <Check className="h-3 w-3" />}
               </button>
@@ -372,12 +509,19 @@ function AttributeField({ attr, value, onChange }: { attr: AttrRow; value: AttrV
     return (
       <div className="space-y-1.5">
         <Label className="text-sm">{label}</Label>
-        <Select value={typeof value === "string" && value ? value : NONE} onValueChange={(v) => onChange(v === NONE ? undefined : v)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select
+          value={typeof value === "string" && value ? value : NONE}
+          onValueChange={(v) => onChange(v === NONE ? undefined : v)}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={NONE}>—</SelectItem>
             {attr.options.map((o) => (
-              <SelectItem key={o.id} value={o.value}>{optLabel(o)}</SelectItem>
+              <SelectItem key={o.id} value={o.value}>
+                {optLabel(o)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -385,14 +529,25 @@ function AttributeField({ attr, value, onChange }: { attr: AttrRow; value: AttrV
     );
   }
 
-  const inputType = attr.type === "number" || attr.type === "measurement" ? "number" : attr.type === "date" ? "date" : "text";
+  const inputType =
+    attr.type === "number" || attr.type === "measurement"
+      ? "number"
+      : attr.type === "date"
+        ? "date"
+        : "text";
   return (
     <div className="space-y-1.5">
       <Label className="text-sm">
         {label}
         {attr.unit ? <span className="text-muted-foreground"> ({attr.unit})</span> : null}
       </Label>
-      <Input type={inputType} step="any" maxLength={300} value={typeof value === "string" ? value : ""} onChange={(e) => onChange(e.target.value)} />
+      <Input
+        type={inputType}
+        step="any"
+        maxLength={300}
+        value={typeof value === "string" ? value : ""}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 }
@@ -416,8 +571,12 @@ function ResultPanel({
     return (
       <div className="flex min-h-80 flex-col items-center justify-center gap-3 rounded-2xl border bg-card p-6 text-center shadow-card">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        <p className="font-medium">{tr("L'IA rédige votre description…", "الذكاء الاصطناعي يحرر الوصف…")}</p>
-        <p className="text-xs text-muted-foreground">{tr("Cela prend généralement 10 à 30 secondes.", "يستغرق ذلك عادة من 10 إلى 30 ثانية.")}</p>
+        <p className="font-medium">
+          {tr("L'IA rédige votre description…", "الذكاء الاصطناعي يحرر الوصف…")}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {tr("Cela prend généralement 10 à 30 secondes.", "يستغرق ذلك عادة من 10 إلى 30 ثانية.")}
+        </p>
       </div>
     );
   }
@@ -425,20 +584,35 @@ function ResultPanel({
   if (!result) {
     return (
       <div className="flex min-h-80 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-card/50 p-6 text-center">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft text-primary"><Sparkles className="h-5 w-5" /></span>
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft text-primary">
+          <Sparkles className="h-5 w-5" />
+        </span>
         <p className="font-medium">{tr("Votre description apparaîtra ici", "سيظهر الوصف هنا")}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          {tr("Renseignez les caractéristiques, choisissez un modèle puis cliquez sur « Générer ». Vous pourrez modifier le texte avant de le copier.", "أدخل الخصائص، اختر قالباً ثم اضغط «إنشاء». يمكنك تعديل النص قبل نسخه.")}
+          {tr(
+            "Renseignez les caractéristiques, choisissez un modèle puis cliquez sur « Générer ». Vous pourrez modifier le texte avant de le copier.",
+            "أدخل الخصائص، اختر قالباً ثم اضغط «إنشاء». يمكنك تعديل النص قبل نسخه.",
+          )}
         </p>
       </div>
     );
   }
 
   return (
-    <div className={cn("space-y-4 rounded-2xl border bg-card p-5 shadow-card lg:sticky lg:top-20 lg:self-start", pending && "opacity-60")}>
+    <div
+      className={cn(
+        "space-y-4 rounded-2xl border bg-card p-5 shadow-card lg:sticky lg:top-20 lg:self-start",
+        pending && "opacity-60",
+      )}
+    >
       <div className="flex items-center justify-between gap-2">
-        <p className="flex items-center gap-2 font-semibold"><Sparkles className="h-4 w-4 text-primary" /> {tr("Description prête à publier", "وصف جاهز للنشر")}</p>
-        <Button type="button" variant="ghost" size="sm" onClick={onReset}><RotateCcw /> {tr("Effacer", "مسح")}</Button>
+        <p className="flex items-center gap-2 font-semibold">
+          <Sparkles className="h-4 w-4 text-primary" />{" "}
+          {tr("Description prête à publier", "وصف جاهز للنشر")}
+        </p>
+        <Button type="button" variant="ghost" size="sm" onClick={onReset}>
+          <RotateCcw /> {tr("Effacer", "مسح")}
+        </Button>
       </div>
       {result.description_fr !== null && (
         <LangBlock
@@ -460,7 +634,9 @@ function ResultPanel({
           onBody={(v) => onChange({ ...result, description_ar: v })}
         />
       )}
-      <p className="text-xs text-muted-foreground">{tr("Relisez toujours le texte avant publication.", "راجع النص دائماً قبل النشر.")}</p>
+      <p className="text-xs text-muted-foreground">
+        {tr("Relisez toujours le texte avant publication.", "راجع النص دائماً قبل النشر.")}
+      </p>
       {onApply && (
         <Button type="button" className="w-full" onClick={() => onApply(result)}>
           <Check /> {tr("Utiliser cette description", "استعمال هذا الوصف")}
@@ -504,21 +680,35 @@ function LangBlock({
       <div className="flex items-center justify-between">
         <Badge variant="secondary">{title}</Badge>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{words} {tr("mots", "كلمة")}</span>
+          <span className="text-xs text-muted-foreground">
+            {words} {tr("mots", "كلمة")}
+          </span>
           <Button type="button" size="sm" variant="outline" onClick={copy}>
             {copied ? <Check /> : <Copy />} {copied ? tr("Copié", "تم النسخ") : tr("Copier", "نسخ")}
           </Button>
         </div>
       </div>
       <div className="space-y-1">
-        <Label className="text-xs text-muted-foreground">{tr("Accroche courte", "جملة مختصرة")}</Label>
-        <Input dir={dir} maxLength={200} value={summary} onChange={(e) => onSummary(e.target.value)} />
+        <Label className="text-xs text-muted-foreground">
+          {tr("Accroche courte", "جملة مختصرة")}
+        </Label>
+        <Input
+          dir={dir}
+          maxLength={200}
+          value={summary}
+          onChange={(e) => onSummary(e.target.value)}
+        />
       </div>
       <div className="space-y-1">
         <Label className="text-xs text-muted-foreground">{tr("Description", "الوصف")}</Label>
-        <Textarea dir={dir} rows={10} value={body} onChange={(e) => onBody(e.target.value)} className="leading-relaxed" />
+        <Textarea
+          dir={dir}
+          rows={10}
+          value={body}
+          onChange={(e) => onBody(e.target.value)}
+          className="leading-relaxed"
+        />
       </div>
     </div>
   );
 }
-

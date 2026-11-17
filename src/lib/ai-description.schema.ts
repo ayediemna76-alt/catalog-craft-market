@@ -18,7 +18,12 @@ export const descriptionInputSchema = z.object({
   audience: optionalText(160),
   highlights: optionalText(1500),
   attributes: z
-    .array(z.object({ label: z.string().trim().min(1).max(80), value: z.string().trim().min(1).max(300) }))
+    .array(
+      z.object({
+        label: z.string().trim().min(1).max(80),
+        value: z.string().trim().min(1).max(300),
+      }),
+    )
     .max(40),
   languages: z.enum(["fr", "ar", "both"]),
 });
@@ -34,5 +39,4 @@ export type DescriptionResult = {
 };
 
 export type DescriptionResponse =
-  | { ok: true; data: DescriptionResult }
-  | { ok: false; code: string; error: string };
+  { ok: true; data: DescriptionResult } | { ok: false; code: string; error: string };

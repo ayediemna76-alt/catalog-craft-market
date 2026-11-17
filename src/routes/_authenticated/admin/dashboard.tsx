@@ -1,10 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { AlertTriangle, Banknote, FolderTree, LayoutDashboard, Package, ShoppingBag, Truck } from "lucide-react";
+import {
+  AlertTriangle,
+  Banknote,
+  FolderTree,
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  Truck,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { EmptyState, ErrorState, PageHeader } from "@/components/admin/AdminShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,7 +28,10 @@ export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({
     meta: [
       { title: "Tableau de bord — weshop admin" },
-      { name: "description", content: "Vue d'ensemble des ventes, commandes et stock de la boutique." },
+      {
+        name: "description",
+        content: "Vue d'ensemble des ventes, commandes et stock de la boutique.",
+      },
       { property: "og:title", content: "Tableau de bord — weshop admin" },
       { property: "og:description", content: "Administration weshop." },
       { property: "og:type", content: "website" },
@@ -26,7 +42,15 @@ export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   component: DashboardPage,
 });
 
-type OrderRow = { id: string; reference: string; customer_name: string; created_at: string; status: string; payment_status: string; total: number };
+type OrderRow = {
+  id: string;
+  reference: string;
+  customer_name: string;
+  created_at: string;
+  status: string;
+  payment_status: string;
+  total: number;
+};
 
 function useDashboardData() {
   return useQuery({
@@ -35,7 +59,10 @@ function useDashboardData() {
       const since = new Date(Date.now() - 30 * 86400_000).toISOString();
       const [products, published, categories, orders, inventory, pending] = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }),
-        supabase.from("products").select("id", { count: "exact", head: true }).eq("status", "published"),
+        supabase
+          .from("products")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "published"),
         supabase.from("categories").select("id", { count: "exact", head: true }),
         supabase
           .from("orders")
@@ -44,9 +71,13 @@ function useDashboardData() {
           .order("created_at", { ascending: false })
           .limit(1000),
         supabase.from("inventory").select("variant_id,available,low_stock_threshold"),
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase
+          .from("orders")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
       ]);
-      for (const r of [products, published, categories, orders, inventory, pending]) if (r.error) throw r.error;
+      for (const r of [products, published, categories, orders, inventory, pending])
+        if (r.error) throw r.error;
       return {
         products: products.count ?? 0,
         published: published.count ?? 0,
@@ -64,7 +95,19 @@ const chartConfig = {
   delivered: { label: "Livrées", color: "var(--chart-2)" },
 } satisfies ChartConfig;
 
-function Stat({ icon: Icon, label, value, hint, tone = "primary" }: { icon: typeof Package; label: string; value: string | number; hint?: string; tone?: "primary" | "highlight" | "warning" | "success" }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  tone = "primary",
+}: {
+  icon: typeof Package;
+  label: string;
+  value: string | number;
+  hint?: string;
+  tone?: "primary" | "highlight" | "warning" | "success";
+}) {
   const tones = {
     primary: "bg-primary-soft text-primary",
     highlight: "bg-highlight/10 text-highlight",
@@ -96,14 +139,21 @@ function DashboardPage() {
   const live = d?.orders.filter((o) => o.status !== "cancelled") ?? [];
   const delivered = live.filter((o) => o.status === "delivered");
   const deliveredSales = delivered.reduce((s, o) => s + Number(o.total), 0);
-  const collected = live.filter((o) => o.payment_status === "paid").reduce((s, o) => s + Number(o.total), 0);
-  const outstanding = delivered.filter((o) => o.payment_status === "unpaid").reduce((s, o) => s + Number(o.total), 0);
+  const collected = live
+    .filter((o) => o.payment_status === "paid")
+    .reduce((s, o) => s + Number(o.total), 0);
+  const outstanding = delivered
+    .filter((o) => o.payment_status === "unpaid")
+    .reduce((s, o) => s + Number(o.total), 0);
 
   const days = Array.from({ length: 14 }, (_, i) => {
     const day = new Date(Date.now() - (13 - i) * 86400_000);
     const key = day.toISOString().slice(0, 10);
     return {
-      day: day.toLocaleDateString(locale === "ar" ? "ar-TN" : "fr-FR", { day: "2-digit", month: "short" }),
+      day: day.toLocaleDateString(locale === "ar" ? "ar-TN" : "fr-FR", {
+        day: "2-digit",
+        month: "short",
+      }),
       placed: live.filter((o) => o.created_at.slice(0, 10) === key).length,
       delivered: delivered.filter((o) => o.created_at.slice(0, 10) === key).length,
     };
@@ -111,7 +161,11 @@ function DashboardPage() {
 
   return (
     <div>
-      <PageHeader icon={LayoutDashboard} title={tr("Tableau de bord", "لوحة القيادة")} description={tr("Les 30 derniers jours", "آخر 30 يوماً")} />
+      <PageHeader
+        icon={LayoutDashboard}
+        title={tr("Tableau de bord", "لوحة القيادة")}
+        description={tr("Les 30 derniers jours", "آخر 30 يوماً")}
+      />
 
       {q.isLoading || !d ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -122,21 +176,52 @@ function DashboardPage() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Stat icon={ShoppingBag} label={tr("Commandes (30 j)", "الطلبات (30 يوماً)")} value={live.length} hint={`${d.pending} ${tr("en attente", "في الانتظار")}`} />
-            <Stat icon={Truck} label={tr("Ventes livrées", "مبيعات مسلّمة")} value={formatTND(deliveredSales, locale)} hint={`${delivered.length} ${tr("commandes", "طلبات")}`} tone="success" />
-            <Stat icon={Banknote} label={tr("Espèces encaissées", "النقد المحصّل")} value={formatTND(collected, locale)} hint={`${tr("À encaisser", "للتحصيل")} : ${formatTND(outstanding, locale)}`} tone="highlight" />
-            <Stat icon={AlertTriangle} label={tr("Stock faible", "مخزون منخفض")} value={d.lowStock} hint={tr("variantes sous le seuil", "متغيرات تحت الحد")} tone="warning" />
+            <Stat
+              icon={ShoppingBag}
+              label={tr("Commandes (30 j)", "الطلبات (30 يوماً)")}
+              value={live.length}
+              hint={`${d.pending} ${tr("en attente", "في الانتظار")}`}
+            />
+            <Stat
+              icon={Truck}
+              label={tr("Ventes livrées", "مبيعات مسلّمة")}
+              value={formatTND(deliveredSales, locale)}
+              hint={`${delivered.length} ${tr("commandes", "طلبات")}`}
+              tone="success"
+            />
+            <Stat
+              icon={Banknote}
+              label={tr("Espèces encaissées", "النقد المحصّل")}
+              value={formatTND(collected, locale)}
+              hint={`${tr("À encaisser", "للتحصيل")} : ${formatTND(outstanding, locale)}`}
+              tone="highlight"
+            />
+            <Stat
+              icon={AlertTriangle}
+              label={tr("Stock faible", "مخزون منخفض")}
+              value={d.lowStock}
+              hint={tr("variantes sous le seuil", "متغيرات تحت الحد")}
+              tone="warning"
+            />
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-3">
             <div className="rounded-2xl border bg-card p-5 shadow-card lg:col-span-2">
               <p className="font-semibold">{tr("Commandes par jour", "الطلبات يومياً")}</p>
-              <p className="text-xs text-muted-foreground">{tr("14 derniers jours, hors annulations", "آخر 14 يوماً بدون الملغاة")}</p>
+              <p className="text-xs text-muted-foreground">
+                {tr("14 derniers jours, hors annulations", "آخر 14 يوماً بدون الملغاة")}
+              </p>
               <ChartContainer config={chartConfig} className="mt-4 h-64 w-full">
                 <BarChart data={days}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" />
                   <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={11} />
-                  <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={28} fontSize={11} />
+                  <YAxis
+                    allowDecimals={false}
+                    tickLine={false}
+                    axisLine={false}
+                    width={28}
+                    fontSize={11}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="placed" fill="var(--color-placed)" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="delivered" fill="var(--color-delivered)" radius={[4, 4, 0, 0]} />
@@ -144,7 +229,12 @@ function DashboardPage() {
               </ChartContainer>
             </div>
             <div className="space-y-4">
-              <Stat icon={Package} label={tr("Produits", "المنتجات")} value={d.products} hint={`${d.published} ${tr("publiés", "منشورة")}`} />
+              <Stat
+                icon={Package}
+                label={tr("Produits", "المنتجات")}
+                value={d.products}
+                hint={`${d.published} ${tr("publiés", "منشورة")}`}
+              />
               <Stat icon={FolderTree} label={tr("Catégories", "الأقسام")} value={d.categories} />
             </div>
           </div>
@@ -160,8 +250,14 @@ function DashboardPage() {
                   title={tr("Aucune commande pour l'instant", "لا توجد طلبات بعد")}
                   description={
                     d.categories === 0
-                      ? tr("Commencez par créer vos catégories et leurs attributs.", "ابدأ بإنشاء الأقسام وخصائصها.")
-                      : tr("Les commandes apparaîtront ici dès qu'un client commandera.", "ستظهر الطلبات هنا فور قيام حريف بالطلب.")
+                      ? tr(
+                          "Commencez par créer vos catégories et leurs attributs.",
+                          "ابدأ بإنشاء الأقسام وخصائصها.",
+                        )
+                      : tr(
+                          "Les commandes apparaîtront ici dès qu'un client commandera.",
+                          "ستظهر الطلبات هنا فور قيام حريف بالطلب.",
+                        )
                   }
                   action={
                     isAdmin && d.categories === 0 ? (
@@ -175,7 +271,10 @@ function DashboardPage() {
             ) : (
               <ul className="divide-y">
                 {d.orders.slice(0, 8).map((o) => (
-                  <li key={o.id} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+                  <li
+                    key={o.id}
+                    className="flex items-center justify-between gap-4 px-5 py-3 text-sm"
+                  >
                     <div className="min-w-0">
                       <p className="font-medium">{o.reference}</p>
                       <p className="truncate text-xs text-muted-foreground">{o.customer_name}</p>

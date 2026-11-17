@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import {
   BarChart3,
   Boxes,
+  Coins,
   ExternalLink,
   FolderTree,
   LayoutDashboard,
@@ -16,6 +17,7 @@ import {
   Sparkles,
   Users,
   Wallet,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -27,7 +29,14 @@ import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
-  to?: "/admin/dashboard" | "/admin/categories" | "/admin/products" | "/admin/inventory" | "/admin/ai-writer" | "/admin/settings";
+  to?:
+    | "/admin/dashboard"
+    | "/admin/categories"
+    | "/admin/products"
+    | "/admin/inventory"
+    | "/admin/ai-writer"
+    | "/admin/tokens"
+    | "/admin/settings";
   icon: typeof LayoutDashboard;
   fr: string;
   ar: string;
@@ -37,15 +46,38 @@ type NavItem = {
 const NAV: { group: [string, string]; items: NavItem[] }[] = [
   {
     group: ["Pilotage", "القيادة"],
-    items: [{ to: "/admin/dashboard", icon: LayoutDashboard, fr: "Tableau de bord", ar: "لوحة القيادة" }],
+    items: [
+      { to: "/admin/dashboard", icon: LayoutDashboard, fr: "Tableau de bord", ar: "لوحة القيادة" },
+    ],
+  },
+  {
+    group: ["Monétisation", "الترويج والرموز"],
+    items: [
+      {
+        to: "/admin/tokens",
+        icon: Coins,
+        fr: "Tokens & Boosts",
+        ar: "الرموز والترويج",
+      },
+    ],
   },
   {
     group: ["Catalogue", "الكتالوج"],
     items: [
-      { to: "/admin/categories", icon: FolderTree, fr: "Catégories & attributs", ar: "الأقسام والخصائص" },
+      {
+        to: "/admin/categories",
+        icon: FolderTree,
+        fr: "Catégories & attributs",
+        ar: "الأقسام والخصائص",
+      },
       { icon: Package, fr: "Produits", ar: "المنتجات", to: "/admin/products" },
       { icon: Boxes, fr: "Stock", ar: "المخزون", to: "/admin/inventory" },
-      { to: "/admin/ai-writer", icon: Sparkles, fr: "Rédaction IA", ar: "التحرير بالذكاء الاصطناعي" },
+      {
+        to: "/admin/ai-writer",
+        icon: Sparkles,
+        fr: "Rédaction IA",
+        ar: "التحرير بالذكاء الاصطناعي",
+      },
     ],
   },
   {
@@ -128,10 +160,20 @@ function SidebarFooter() {
           {(user?.email ?? "?").charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-sidebar-accent-foreground">{user?.email}</p>
-          <p className="text-[11px] text-sidebar-foreground/60">{isAdmin ? tr("Administrateur", "مسؤول") : tr("Équipe", "فريق")}</p>
+          <p className="truncate text-xs font-medium text-sidebar-accent-foreground">
+            {user?.email}
+          </p>
+          <p className="text-[11px] text-sidebar-foreground/60">
+            {isAdmin ? tr("Administrateur", "مسؤول") : tr("Équipe", "فريق")}
+          </p>
         </div>
-        <Button size="icon" variant="ghost" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" onClick={signOut} aria-label="Déconnexion">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          onClick={signOut}
+          aria-label="Déconnexion"
+        >
           <LogOut className="h-4 w-4" />
         </Button>
       </div>
@@ -158,7 +200,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side={locale === "ar" ? "right" : "left"} className="flex w-64 flex-col border-0 bg-sidebar p-0">
+            <SheetContent
+              side={locale === "ar" ? "right" : "left"}
+              className="flex w-64 flex-col border-0 bg-sidebar p-0"
+            >
               <div className="flex h-16 items-center px-5">
                 <Logo inverted />
               </div>
@@ -166,12 +211,15 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <SidebarFooter />
             </SheetContent>
           </Sheet>
-          <span className="text-sm font-medium text-muted-foreground">{tr("Espace administration", "فضاء الإدارة")}</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            {tr("Espace administration", "فضاء الإدارة")}
+          </span>
           <div className="ms-auto flex items-center gap-2">
             <LanguageToggle />
             <Button asChild variant="outline" size="sm">
               <a href="/" target="_blank" rel="noreferrer">
-                <ExternalLink /> <span className="hidden sm:inline">{tr("Voir la boutique", "عرض المتجر")}</span>
+                <ExternalLink />{" "}
+                <span className="hidden sm:inline">{tr("Voir la boutique", "عرض المتجر")}</span>
               </a>
             </Button>
           </div>
@@ -182,7 +230,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
   );
 }
 
-export function PageHeader({ title, description, actions, icon: Icon }: { title: string; description?: string; actions?: ReactNode; icon?: typeof BarChart3 }) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  icon: Icon,
+}: {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  icon?: typeof BarChart3;
+}) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="flex items-center gap-3">
@@ -201,7 +259,17 @@ export function PageHeader({ title, description, actions, icon: Icon }: { title:
   );
 }
 
-export function EmptyState({ icon: Icon, title, description, action }: { icon: typeof BarChart3; title: string; description?: string; action?: ReactNode }) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+}: {
+  icon: typeof BarChart3;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+}) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed bg-card px-6 py-14 text-center">
       <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft text-primary">
@@ -218,8 +286,12 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   const { tr } = useI18n();
   return (
     <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
-      <p className="font-medium text-destructive">{tr("Impossible de charger les données", "تعذر تحميل البيانات")}</p>
-      <p className="mt-1 text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
+      <p className="font-medium text-destructive">
+        {tr("Impossible de charger les données", "تعذر تحميل البيانات")}
+      </p>
+      <p className="mt-1 text-muted-foreground">
+        {error instanceof Error ? error.message : String(error)}
+      </p>
       {onRetry && (
         <Button size="sm" variant="outline" className="mt-3" onClick={onRetry}>
           {tr("Réessayer", "إعادة المحاولة")}

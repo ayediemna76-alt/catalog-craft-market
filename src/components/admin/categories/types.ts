@@ -6,14 +6,24 @@ export type AttributeOption = Tables<"category_attribute_options">;
 export type AttributeType = Enums<"attribute_type">;
 export type AttributeWithOptions = Attribute & { category_attribute_options: AttributeOption[] };
 
-export const ATTRIBUTE_TYPES: { value: AttributeType; fr: string; ar: string; hasOptions: boolean }[] = [
+export const ATTRIBUTE_TYPES: {
+  value: AttributeType;
+  fr: string;
+  ar: string;
+  hasOptions: boolean;
+}[] = [
   { value: "text", fr: "Texte", ar: "نص", hasOptions: false },
   { value: "number", fr: "Nombre", ar: "رقم", hasOptions: false },
   { value: "measurement", fr: "Mesure (avec unité)", ar: "قياس (مع وحدة)", hasOptions: false },
   { value: "boolean", fr: "Oui / Non", ar: "نعم / لا", hasOptions: false },
   { value: "date", fr: "Date", ar: "تاريخ", hasOptions: false },
   { value: "dropdown", fr: "Liste (choix unique)", ar: "قائمة (اختيار واحد)", hasOptions: true },
-  { value: "multi_select", fr: "Liste (choix multiples)", ar: "قائمة (اختيارات متعددة)", hasOptions: true },
+  {
+    value: "multi_select",
+    fr: "Liste (choix multiples)",
+    ar: "قائمة (اختيارات متعددة)",
+    hasOptions: true,
+  },
   { value: "color", fr: "Couleur", ar: "لون", hasOptions: true },
 ];
 
@@ -27,10 +37,11 @@ export function descendantIds(all: Category[], id: string): Set<string> {
   let grew = true;
   while (grew) {
     grew = false;
-    for (const c of all) if (c.parent_id && out.has(c.parent_id) && !out.has(c.id)) {
-      out.add(c.id);
-      grew = true;
-    }
+    for (const c of all)
+      if (c.parent_id && out.has(c.parent_id) && !out.has(c.id)) {
+        out.add(c.id);
+        grew = true;
+      }
   }
   return out;
 }

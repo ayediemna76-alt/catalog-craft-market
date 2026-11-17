@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export type CartItem = {
   variantId: string;
@@ -36,9 +44,16 @@ export function clampQty(qty: number, max = MAX_LINE_QTY) {
 }
 
 /** Adds qty to an existing line or appends a new one, never above MAX_LINE_QTY. */
-export function mergeCartItem(items: CartItem[], item: Omit<CartItem, "qty">, qty: number): CartItem[] {
+export function mergeCartItem(
+  items: CartItem[],
+  item: Omit<CartItem, "qty">,
+  qty: number,
+): CartItem[] {
   const existing = items.find((i) => i.variantId === item.variantId);
-  if (existing) return items.map((i) => (i.variantId === item.variantId ? { ...i, ...item, qty: clampQty(i.qty + qty) } : i));
+  if (existing)
+    return items.map((i) =>
+      i.variantId === item.variantId ? { ...i, ...item, qty: clampQty(i.qty + qty) } : i,
+    );
   return [...items, { ...item, qty: clampQty(qty) }];
 }
 
@@ -51,7 +66,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as CartItem[];
-        if (Array.isArray(parsed)) setItems(parsed.filter((i) => i && typeof i.variantId === "string" && i.qty > 0).slice(0, 50));
+        if (Array.isArray(parsed))
+          setItems(
+            parsed.filter((i) => i && typeof i.variantId === "string" && i.qty > 0).slice(0, 50),
+          );
       }
     } catch {
       /* ignore corrupted cart */
@@ -77,12 +95,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const add = useCallback((item: Omit<CartItem, "qty">, qty: number) => setItems((prev) => mergeCartItem(prev, item, qty)), []);
-  const setQty = useCallback(
-    (variantId: string, qty: number) => setItems((prev) => prev.map((i) => (i.variantId === variantId ? { ...i, qty: clampQty(qty) } : i))),
+  const add = useCallback(
+    (item: Omit<CartItem, "qty">, qty: number) =>
+      setItems((prev) => mergeCartItem(prev, item, qty)),
     [],
   );
-  const remove = useCallback((variantId: string) => setItems((prev) => prev.filter((i) => i.variantId !== variantId)), []);
+  const setQty = useCallback(
+    (variantId: string, qty: number) =>
+      setItems((prev) =>
+        prev.map((i) => (i.variantId === variantId ? { ...i, qty: clampQty(qty) } : i)),
+      ),
+    [],
+  );
+  const remove = useCallback(
+    (variantId: string) => setItems((prev) => prev.filter((i) => i.variantId !== variantId)),
+    [],
+  );
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartCtx>(

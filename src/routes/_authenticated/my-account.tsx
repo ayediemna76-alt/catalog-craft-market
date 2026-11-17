@@ -8,8 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { StoreLayout } from "@/components/store/StoreLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,7 +33,10 @@ export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
     meta: [
       { title: "Mon compte — weshop" },
-      { name: "description", content: "Gérez vos informations personnelles et vos adresses de livraison." },
+      {
+        name: "description",
+        content: "Gérez vos informations personnelles et vos adresses de livraison.",
+      },
       { property: "og:title", content: "Mon compte — weshop" },
       { property: "og:description", content: "Espace client weshop." },
       { property: "og:type", content: "website" },
@@ -53,7 +68,11 @@ function ProfileCard() {
     queryKey: ["profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user!.id)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -70,9 +89,13 @@ function ProfileCard() {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from("profiles")
-        .upsert({ id: user!.id, email: user!.email ?? null, full_name: form.full_name.trim() || null, phone: form.phone.trim() || null, preferred_locale: form.preferred_locale });
+      const { error } = await supabase.from("profiles").upsert({
+        id: user!.id,
+        email: user!.email ?? null,
+        full_name: form.full_name.trim() || null,
+        phone: form.phone.trim() || null,
+        preferred_locale: form.preferred_locale,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -87,7 +110,10 @@ function ProfileCard() {
     <section className="rounded-2xl border bg-card p-6 shadow-card">
       <h2 className="text-lg font-semibold">{t("account.profile")}</h2>
       {profile.isLoading ? (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2"><Skeleton className="h-10" /><Skeleton className="h-10" /></div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Skeleton className="h-10" />
+          <Skeleton className="h-10" />
+        </div>
       ) : (
         <form
           className="mt-4 grid gap-4 sm:grid-cols-2"
@@ -98,7 +124,11 @@ function ProfileCard() {
         >
           <div className="space-y-1.5">
             <Label>{t("auth.fullName")}</Label>
-            <Input value={form.full_name} maxLength={120} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+            <Input
+              value={form.full_name}
+              maxLength={120}
+              onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label>{t("auth.email")}</Label>
@@ -106,12 +136,24 @@ function ProfileCard() {
           </div>
           <div className="space-y-1.5">
             <Label>{t("account.phone")}</Label>
-            <Input value={form.phone} maxLength={20} inputMode="tel" dir="ltr" placeholder="22 123 456" onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              value={form.phone}
+              maxLength={20}
+              inputMode="tel"
+              dir="ltr"
+              placeholder="22 123 456"
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
           </div>
           <div className="space-y-1.5">
             <Label>{t("account.language")}</Label>
-            <Select value={form.preferred_locale} onValueChange={(v) => setForm({ ...form, preferred_locale: v as Locale })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.preferred_locale}
+              onValueChange={(v) => setForm({ ...form, preferred_locale: v as Locale })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="fr">Français</SelectItem>
                 <SelectItem value="ar">العربية</SelectItem>
@@ -127,7 +169,14 @@ function ProfileCard() {
   );
 }
 
-const emptyAddress = { label: "", full_name: "", phone: "", city: "", address_line: "", instructions: "" };
+const emptyAddress = {
+  label: "",
+  full_name: "",
+  phone: "",
+  city: "",
+  address_line: "",
+  instructions: "",
+};
 
 function AddressesCard() {
   const { t } = useI18n();
@@ -140,7 +189,11 @@ function AddressesCard() {
     queryKey: ["addresses", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("addresses").select("*").order("is_default", { ascending: false }).order("created_at");
+      const { data, error } = await supabase
+        .from("addresses")
+        .select("*")
+        .order("is_default", { ascending: false })
+        .order("created_at");
       if (error) throw error;
       return data;
     },
@@ -149,7 +202,8 @@ function AddressesCard() {
   const add = useMutation({
     mutationFn: async () => {
       const phone = form.phone.replace(/[^0-9+]/g, "");
-      if (!/^(\+?216)?[2-9]\d{7}$/.test(phone)) throw new Error("Numéro de téléphone invalide (8 chiffres).");
+      if (!/^(\+?216)?[2-9]\d{7}$/.test(phone))
+        throw new Error("Numéro de téléphone invalide (8 chiffres).");
       const { error } = await supabase.from("addresses").insert({
         user_id: user!.id,
         label: form.label.trim() || null,
@@ -172,7 +226,10 @@ function AddressesCard() {
 
   const makeDefault = useMutation({
     mutationFn: async (id: string) => {
-      const { error: e1 } = await supabase.from("addresses").update({ is_default: false }).eq("user_id", user!.id);
+      const { error: e1 } = await supabase
+        .from("addresses")
+        .update({ is_default: false })
+        .eq("user_id", user!.id);
       if (e1) throw e1;
       const { error } = await supabase.from("addresses").update({ is_default: true }).eq("id", id);
       if (error) throw error;
@@ -210,21 +267,41 @@ function AddressesCard() {
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 font-medium">
                   <MapPin className="h-4 w-4 text-primary" /> {a.label || a.city}
-                  {a.is_default && <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs text-primary">{t("account.address.default")}</span>}
+                  {a.is_default && (
+                    <span className="rounded-full bg-primary-soft px-2 py-0.5 text-xs text-primary">
+                      {t("account.address.default")}
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-1">
                   {!a.is_default && (
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => makeDefault.mutate(a.id)} aria-label={t("account.address.default")}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => makeDefault.mutate(a.id)}
+                      aria-label={t("account.address.default")}
+                    >
                       <Star />
                     </Button>
                   )}
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove.mutate(a.id)} aria-label={t("common.delete")}>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 text-destructive"
+                    onClick={() => remove.mutate(a.id)}
+                    aria-label={t("common.delete")}
+                  >
                     <Trash2 />
                   </Button>
                 </div>
               </div>
-              <p className="mt-2 text-sm">{a.full_name} · <span dir="ltr">{a.phone}</span></p>
-              <p className="text-sm text-muted-foreground">{a.address_line}, {a.city}</p>
+              <p className="mt-2 text-sm">
+                {a.full_name} · <span dir="ltr">{a.phone}</span>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {a.address_line}, {a.city}
+              </p>
             </div>
           ))}
         </div>
@@ -240,39 +317,80 @@ function AddressesCard() {
           <form id="addr" onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5 sm:col-span-2">
               <Label>{t("account.address.label")}</Label>
-              <Input value={form.label} maxLength={60} onChange={(e) => setForm({ ...form, label: e.target.value })} />
+              <Input
+                value={form.label}
+                maxLength={60}
+                onChange={(e) => setForm({ ...form, label: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>{t("auth.fullName")}</Label>
-              <Input required minLength={2} maxLength={120} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+              <Input
+                required
+                minLength={2}
+                maxLength={120}
+                value={form.full_name}
+                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>{t("account.phone")}</Label>
-              <Input required dir="ltr" inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <Input
+                required
+                dir="ltr"
+                inputMode="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>{t("account.address.city")}</Label>
-              <Select value={form.city} onValueChange={(v) => setForm({ ...form, city: v })} required>
-                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+              <Select
+                value={form.city}
+                onValueChange={(v) => setForm({ ...form, city: v })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="—" />
+                </SelectTrigger>
                 <SelectContent>
                   {(settings.data?.delivery_cities ?? []).map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>{t("account.address.line")}</Label>
-              <Textarea required minLength={5} maxLength={500} value={form.address_line} onChange={(e) => setForm({ ...form, address_line: e.target.value })} />
+              <Textarea
+                required
+                minLength={5}
+                maxLength={500}
+                value={form.address_line}
+                onChange={(e) => setForm({ ...form, address_line: e.target.value })}
+              />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>{t("account.address.instructions")} <span className="text-muted-foreground">({t("common.optional")})</span></Label>
-              <Input maxLength={500} value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} />
+              <Label>
+                {t("account.address.instructions")}{" "}
+                <span className="text-muted-foreground">({t("common.optional")})</span>
+              </Label>
+              <Input
+                maxLength={500}
+                value={form.instructions}
+                onChange={(e) => setForm({ ...form, instructions: e.target.value })}
+              />
             </div>
           </form>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
-            <Button form="addr" disabled={add.isPending || !form.city}>{t("common.save")}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button form="addr" disabled={add.isPending || !form.city}>
+              {t("common.save")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export type Locale = "fr" | "ar";
 
@@ -26,7 +34,8 @@ const fr = {
   "common.inactive": "Inactif",
   "common.optional": "facultatif",
   "home.hero.title": "Achetez en ligne, payez à la porte.",
-  "home.hero.subtitle": "Mode, maison, électronique et plus. Livraison partout en Tunisie, paiement en espèces à la réception.",
+  "home.hero.subtitle":
+    "Mode, maison, électronique et plus. Livraison partout en Tunisie, paiement en espèces à la réception.",
   "home.hero.cta": "Découvrir les catégories",
   "home.perk.cod": "Paiement à la livraison",
   "home.perk.cod.desc": "Main à main, sans carte bancaire",
@@ -51,7 +60,6 @@ const fr = {
   "auth.forgot": "Mot de passe oublié ?",
   "auth.or": "ou",
   "auth.google": "Continuer avec Google",
-  "auth.lovable": "Continuer avec Lovable",
   "auth.checkEmail": "Vérifiez votre boîte mail pour confirmer votre compte.",
   "auth.resetSent": "Un lien de réinitialisation vous a été envoyé.",
   "auth.newPassword": "Nouveau mot de passe",
@@ -71,7 +79,8 @@ const fr = {
   "account.address.instructions": "Instructions de livraison",
   "account.address.default": "Par défaut",
   "setup.title": "Configuration de l'administrateur",
-  "setup.desc": "Aucun administrateur n'existe encore. Le premier compte qui valide devient administrateur de la boutique.",
+  "setup.desc":
+    "Aucun administrateur n'existe encore. Le premier compte qui valide devient administrateur de la boutique.",
   "setup.claim": "Devenir administrateur",
   "setup.taken": "Un administrateur existe déjà. Demandez-lui de vous donner accès.",
   "setup.done": "Vous êtes maintenant administrateur.",
@@ -106,7 +115,8 @@ const ar: Dict = {
   "common.inactive": "غير نشط",
   "common.optional": "اختياري",
   "home.hero.title": "اشترِ عبر الإنترنت وادفع عند الباب.",
-  "home.hero.subtitle": "ملابس، منزل، إلكترونيات والمزيد. توصيل لكامل تونس والدفع نقداً عند الاستلام.",
+  "home.hero.subtitle":
+    "ملابس، منزل، إلكترونيات والمزيد. توصيل لكامل تونس والدفع نقداً عند الاستلام.",
   "home.hero.cta": "اكتشف الأقسام",
   "home.perk.cod": "الدفع عند الاستلام",
   "home.perk.cod.desc": "يداً بيد، بدون بطاقة بنكية",
@@ -131,7 +141,6 @@ const ar: Dict = {
   "auth.forgot": "نسيت كلمة المرور؟",
   "auth.or": "أو",
   "auth.google": "المتابعة باستخدام Google",
-  "auth.lovable": "المتابعة باستخدام Lovable",
   "auth.checkEmail": "تحقق من بريدك الإلكتروني لتأكيد حسابك.",
   "auth.resetSent": "تم إرسال رابط إعادة التعيين.",
   "auth.newPassword": "كلمة المرور الجديدة",
@@ -212,7 +221,11 @@ export function useI18n() {
 }
 
 /** Pick the localized value of a bilingual record field (falls back to French). */
-export function pickLocale<T extends Record<string, unknown>>(row: T, field: string, locale: Locale): string {
+export function pickLocale<T extends Record<string, unknown>>(
+  row: T,
+  field: string,
+  locale: Locale,
+): string {
   const ar = row[`${field}_ar`];
   const fr = row[`${field}_fr`];
   if (locale === "ar" && typeof ar === "string" && ar.trim()) return ar;
