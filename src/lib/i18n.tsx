@@ -167,6 +167,8 @@ type I18nValue = {
   dir: "ltr" | "rtl";
   setLocale: (l: Locale) => void;
   t: (key: TKey) => string;
+  /** Inline bilingual string: tr("Français", "العربية") */
+  tr: (fr: string, ar: string) => string;
 };
 
 const I18nContext = createContext<I18nValue | null>(null);
@@ -195,6 +197,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       dir: locale === "ar" ? "rtl" : "ltr",
       setLocale,
       t: (key) => dictionaries[locale][key] ?? dictionaries.fr[key] ?? key,
+      tr: (frText, arText) => (locale === "ar" ? arText : frText),
     }),
     [locale, setLocale],
   );
