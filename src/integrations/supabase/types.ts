@@ -1343,8 +1343,69 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _apply_order_status: {
+        Args: {
+          _actor: string
+          _note: string
+          _order_id: string
+          _status: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: undefined
+      }
+      _move_stock: {
+        Args: {
+          _actor: string
+          _from: string
+          _order_id: string
+          _qty: number
+          _reason: string
+          _return_id: string
+          _to: string
+          _type: Database["public"]["Enums"]["movement_type"]
+          _variant_id: string
+        }
+        Returns: undefined
+      }
+      adjust_inventory: {
+        Args: {
+          _action: string
+          _quantity: number
+          _reason: string
+          _variant_id: string
+        }
+        Returns: undefined
+      }
       admin_exists: { Args: never; Returns: boolean }
+      cancel_my_order: {
+        Args: { _order_id: string; _reason?: string }
+        Returns: undefined
+      }
+      check_promo: { Args: { _code: string; _subtotal: number }; Returns: Json }
       claim_first_admin: { Args: never; Returns: boolean }
+      collect_cod_payment: {
+        Args: {
+          _amount: number
+          _collected_at?: string
+          _collected_by: string
+          _note?: string
+          _order_id: string
+        }
+        Returns: undefined
+      }
+      create_order: {
+        Args: {
+          _address: string
+          _city: string
+          _customer_name: string
+          _email: string
+          _instructions: string
+          _items: Json
+          _phone: string
+          _promo_code?: string
+          _save_address?: boolean
+        }
+        Returns: Json
+      }
       get_category_attributes: {
         Args: { _category_id: string }
         Returns: {
@@ -1364,6 +1425,14 @@ export type Database = {
           unit: string
         }[]
       }
+      get_variant_availability: {
+        Args: { _product_ids: string[] }
+        Returns: {
+          available: number
+          product_id: string
+          variant_id: string
+        }[]
+      }
       has_purchased: { Args: { _product_id: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -1374,6 +1443,53 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      normalize_phone: { Args: { _phone: string }; Returns: string }
+      process_return: {
+        Args: { _items: Json; _note?: string; _return_id: string }
+        Returns: Json
+      }
+      request_return: {
+        Args: {
+          _description?: string
+          _items: Json
+          _order_id: string
+          _photos?: string[]
+          _reason: string
+        }
+        Returns: Json
+      }
+      set_low_stock_threshold: {
+        Args: { _threshold: number; _variant_id: string }
+        Returns: undefined
+      }
+      set_user_role: {
+        Args: {
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      track_order: {
+        Args: { _phone: string; _reference: string }
+        Returns: Json
+      }
+      update_order_status: {
+        Args: {
+          _note?: string
+          _order_id: string
+          _status: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: undefined
+      }
+      update_return_status: {
+        Args: {
+          _note?: string
+          _return_id: string
+          _status: Database["public"]["Enums"]["return_status"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "staff"
