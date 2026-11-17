@@ -43,7 +43,7 @@ export function AccountMenu() {
     );
   }
 
-  const initial = (user.user_metadata?.full_name || user.email || "?").charAt(0).toUpperCase();
+  const initial = (user.user_metadata?.["full_name"] || user.email || "?").charAt(0).toUpperCase();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -146,15 +146,17 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
     setOptions((list) => {
       if (i === 0) return list;
       const copy = [...list];
-      [copy[i - 1], copy[i]] = [copy[i], copy[i - 1]];
+      const tmp = copy[i - 1]!;
+      copy[i - 1] = copy[i]!;
+      copy[i] = tmp;
       return copy;
     });
 
   const flags = [
-    { key: "is_required" as const, fr: "Obligatoire", ar: "إجباري", hint: ["Doit être rempli pour chaque produit", "يجب تعبئتها لكل منتج"], disabled: false },
-    { key: "is_filterable" as const, fr: "Filtrable", ar: "قابل للتصفية", hint: ["Proposé comme filtre en boutique", "يظهر كمرشح في المتجر"], disabled: false },
-    { key: "is_searchable" as const, fr: "Recherchable", ar: "قابل للبحث", hint: ["Inclus dans la recherche", "مضمن في البحث"], disabled: false },
-    { key: "is_variant" as const, fr: "Crée des variantes", ar: "ينشئ متغيرات", hint: ["Ex. taille × couleur, stock séparé", "مثلاً مقاس × لون، مخزون منفصل"], disabled: !canBeVariant },
+    { key: "is_required" as const, fr: "Obligatoire", ar: "إجباري", hintFr: "Doit être rempli pour chaque produit", hintAr: "يجب تعبئتها لكل منتج", disabled: false },
+    { key: "is_filterable" as const, fr: "Filtrable", ar: "قابل للتصفية", hintFr: "Proposé comme filtre en boutique", hintAr: "يظهر كمرشح في المتجر", disabled: false },
+    { key: "is_searchable" as const, fr: "Recherchable", ar: "قابل للبحث", hintFr: "Inclus dans la recherche", hintAr: "مضمن في البحث", disabled: false },
+    { key: "is_variant" as const, fr: "Crée des variantes", ar: "ينشئ متغيرات", hintFr: "Ex. taille × couleur, stock séparé", hintAr: "مثلاً مقاس × لون، مخزون منفصل", disabled: !canBeVariant },
   ];
 
   return (
@@ -228,7 +230,7 @@ export function AttributeDialog({ open, onOpenChange, categoryId, editing, nextO
                 <span>
                   <span className="block text-sm font-medium">{tr(f.fr, f.ar)}</span>
                   <span className="block text-xs text-muted-foreground">
-                    {f.disabled ? tr("Uniquement pour les types Liste ou Couleur", "فقط لنوع القائمة أو اللون") : tr(f.hint[0], f.hint[1])}
+                    {f.disabled ? tr("Uniquement pour les types Liste ou Couleur", "فقط لنوع القائمة أو اللون") : tr(f.hintFr, f.hintAr)}
                   </span>
                 </span>
               </label>

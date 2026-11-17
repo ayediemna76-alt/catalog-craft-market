@@ -62,7 +62,7 @@ type TreeProps = {
   node: Category;
   all: Category[];
   depth: number;
-  selectedId?: string;
+  selectedId?: string | undefined;
   onSelect: (id: string) => void;
   expanded: Set<string>;
   toggle: (id: string) => void;
