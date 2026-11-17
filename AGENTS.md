@@ -37,3 +37,4 @@ use the editor.
 - Catalog images go in the private `catalog` bucket with long-lived signed links stored on the row (workspace blocks public buckets). Why: images must render for anonymous shoppers.
 - Bilingual content uses `_fr` / `_ar` column pairs read through `pickLocale`; UI strings use `useI18n().t` or `tr(fr, ar)`. Why: French default with Arabic RTL everywhere.
 - Public storefront reads go through `src/lib/catalog.functions.ts` server functions with the publishable key so pages render on the server. Why: SEO and fast first paint.
+- AI product copy is generated only through the admin-gated `generateDescription` server function (`src/lib/ai-description.functions.ts` → `src/lib/ai/description.server.ts`), driven by admin-managed rows in `description_templates`; the reusable `DescriptionGenerator` component exposes `onApply` so the product form can reuse it. Why: prompts and the AI key stay server-side, and writing styles stay editable without code changes.
