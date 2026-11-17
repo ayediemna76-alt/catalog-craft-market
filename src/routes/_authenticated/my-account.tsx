@@ -72,7 +72,7 @@ function ProfileCard() {
     mutationFn: async () => {
       const { error } = await supabase
         .from("profiles")
-        .upsert({ id: user!.id, email: user!.email, full_name: form.full_name.trim() || null, phone: form.phone.trim() || null, preferred_locale: form.preferred_locale });
+        .upsert({ id: user!.id, email: user!.email ?? null, full_name: form.full_name.trim() || null, phone: form.phone.trim() || null, preferred_locale: form.preferred_locale });
       if (error) throw error;
     },
     onSuccess: () => {
