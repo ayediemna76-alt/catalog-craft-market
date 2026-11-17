@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/hooks/use-auth";
+import { CartProvider } from "@/lib/cart";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -138,8 +139,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
-          <Outlet />
-          <Toaster richColors position="top-center" />
+          <CartProvider>
+            <Outlet />
+            <Toaster richColors position="top-center" />
+          </CartProvider>
         </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>

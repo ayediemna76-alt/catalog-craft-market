@@ -12,11 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminSetupRouteImport } from './routes/_authenticated/admin-setup'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAiWriterRouteImport } from './routes/_authenticated/admin/ai-writer'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
@@ -37,6 +40,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -45,6 +53,11 @@ const CategoriesRoute = CategoriesRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -61,6 +74,11 @@ const AuthenticatedMyAccountRoute = AuthenticatedMyAccountRouteImport.update({
   id: '/my-account',
   path: '/my-account',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
@@ -95,11 +113,14 @@ const AuthenticatedAdminSettingsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -109,10 +130,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
   '/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/my-account': typeof AuthenticatedMyAccountRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -124,11 +148,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin-setup': typeof AuthenticatedAdminSetupRoute
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -140,11 +167,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/cart'
     | '/categories'
     | '/reset-password'
+    | '/shop'
     | '/admin'
     | '/admin-setup'
     | '/my-account'
+    | '/product/$slug'
     | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
@@ -154,10 +184,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/cart'
     | '/categories'
     | '/reset-password'
+    | '/shop'
     | '/admin-setup'
     | '/my-account'
+    | '/product/$slug'
     | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
@@ -168,11 +201,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/cart'
     | '/categories'
     | '/reset-password'
+    | '/shop'
     | '/_authenticated/admin'
     | '/_authenticated/admin-setup'
     | '/_authenticated/my-account'
+    | '/product/$slug'
     | '/_authenticated/admin/ai-writer'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/dashboard'
@@ -184,8 +220,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ShopRoute: typeof ShopRoute
+  ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -211,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categories': {
       id: '/categories'
       path: '/categories'
@@ -223,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -245,6 +298,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/my-account'
       preLoaderRoute: typeof AuthenticatedMyAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -325,8 +385,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ShopRoute: ShopRoute,
+  ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

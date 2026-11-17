@@ -1,7 +1,9 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, Menu, Truck } from "lucide-react";
-import type { ReactNode } from "react";
+import { ChevronDown, Menu, Search, ShoppingBag, Truck } from "lucide-react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Input } from "@/components/ui/input";
+import { useCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -30,7 +32,7 @@ function CategoryMenu({ categories }: { categories: PublicCategory[] }) {
         {roots.length === 0 && <div className="px-2 py-3 text-sm text-muted-foreground">{t("home.categories.empty")}</div>}
         {roots.map((c) => (
           <DropdownMenuItem key={c.id} asChild>
-            <Link to="/categories" hash={c.slug}>
+            <Link to="/shop" search={{ c: c.slug }}>
               {pickLocale(c, "name", locale)}
             </Link>
           </DropdownMenuItem>
@@ -44,6 +46,52 @@ function CategoryMenu({ categories }: { categories: PublicCategory[] }) {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function SearchBox({ className }: { className?: string }) {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const current = useRouterState({ select: (st) => (st.location.pathname === "/shop" ? ((st.location.search as { q?: string }).q ?? "") : "") });
+  const [value, setValue] = useState(current);
+  useEffect(() => setValue(current), [current]);
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    const q = value.trim();
+    navigate({ to: "/shop", search: q ? { q } : {} });
+  }
+  return (
+    <form onSubmit={submit} className={className} role="search">
+      <div className="relative">
+        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          value={value}
+          maxLength={120}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={t("nav.search")}
+          aria-label={t("nav.search")}
+          className="h-9 rounded-full bg-muted/60 ps-9"
+        />
+      </div>
+    </form>
+  );
+}
+
+function CartButton() {
+  const { count, ready } = useCart();
+  const { tr } = useI18n();
+  return (
+    <Button asChild variant="ghost" size="icon" className="relative">
+      <Link to="/cart" aria-label={tr("Panier", "السلة")}>
+        <ShoppingBag />
+        {ready && count > 0 && (
+          <span className="absolute -end-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+            {count > 99 ? "99+" : count}
+          </span>
+        )}
+      </Link>
+    </Button>
   );
 }
 
@@ -76,9 +124,10 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               </SheetHeader>
               <nav className="mt-2 flex flex-col gap-1 px-4">
                 <Link to="/" className="rounded-md px-2 py-2 text-sm font-medium hover:bg-accent">{t("nav.home")}</Link>
+                <Link to="/shop" className="rounded-md px-2 py-2 text-sm font-medium hover:bg-accent">{t("nav.shop")}</Link>
                 <Link to="/categories" className="rounded-md px-2 py-2 text-sm font-medium hover:bg-accent">{t("nav.categories")}</Link>
                 {categories.filter((c) => !c.parent_id).map((c) => (
-                  <Link key={c.id} to="/categories" hash={c.slug} className="rounded-md px-4 py-1.5 text-sm text-muted-foreground hover:bg-accent">
+                  <Link key={c.id} to="/shop" search={{ c: c.slug }} className="rounded-md px-4 py-1.5 text-sm text-muted-foreground hover:bg-accent">
                     {pickLocale(c, "name", locale)}
                   </Link>
                 ))}
@@ -90,12 +139,20 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             <Button asChild variant="ghost" size="sm">
               <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-primary" }}>{t("nav.home")}</Link>
             </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/shop" activeProps={{ className: "text-primary" }}>{t("nav.shop")}</Link>
+            </Button>
             <CategoryMenu categories={categories} />
           </nav>
-          <div className="ms-auto flex items-center gap-2">
+          <SearchBox className="mx-auto hidden max-w-sm flex-1 lg:block" />
+          <div className="ms-auto flex items-center gap-1.5 lg:ms-0">
             <LanguageToggle />
+            <CartButton />
             <AccountMenu />
           </div>
+        </div>
+        <div className="border-t px-4 py-2 lg:hidden">
+          <SearchBox />
         </div>
       </header>
       <main className="flex-1">{children}</main>
@@ -110,7 +167,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             <ul className="mt-3 space-y-2 text-muted-foreground">
               {categories.filter((c) => !c.parent_id).slice(0, 6).map((c) => (
                 <li key={c.id}>
-                  <Link to="/categories" hash={c.slug} className="hover:text-foreground">{pickLocale(c, "name", locale)}</Link>
+                  <Link to="/shop" search={{ c: c.slug }} className="hover:text-foreground">{pickLocale(c, "name", locale)}</Link>
                 </li>
               ))}
             </ul>

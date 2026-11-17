@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { StoreLayout } from "@/components/store/StoreLayout";
 import { publicCategoriesQuery, type PublicCategory } from "@/lib/catalog.functions";
@@ -27,7 +27,7 @@ function Children({ all, parentId, depth }: { all: PublicCategory[]; parentId: s
     <ul className={depth === 0 ? "mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2" : "ms-4 mt-1 space-y-1 border-s ps-3"}>
       {kids.map((k) => (
         <li key={k.id}>
-          <span className={depth === 0 ? "text-sm font-medium" : "text-sm text-muted-foreground"}>{pickLocale(k, "name", locale)}</span>
+          <Link to="/shop" search={{ c: k.slug }} className={depth === 0 ? "text-sm font-medium hover:text-primary" : "text-sm text-muted-foreground hover:text-primary"}>{pickLocale(k, "name", locale)}</Link>
           <Children all={all} parentId={k.id} depth={depth + 1} />
         </li>
       ))}
@@ -62,7 +62,7 @@ function CategoriesPage() {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-xl font-semibold">{pickLocale(c, "name", locale)}</h2>
+                    <h2 className="text-xl font-semibold"><Link to="/shop" search={{ c: c.slug }} className="hover:text-primary">{pickLocale(c, "name", locale)}</Link></h2>
                     {pickLocale(c, "description", locale) && (
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{pickLocale(c, "description", locale)}</p>
                     )}
