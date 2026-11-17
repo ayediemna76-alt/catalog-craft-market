@@ -24,7 +24,10 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminAiWriterRouteImport } from './routes/_authenticated/admin/ai-writer'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminProductsIndexRouteImport } from './routes/_authenticated/admin/products.index'
+import { Route as AuthenticatedAdminProductsProductIdRouteImport } from './routes/_authenticated/admin/products.$productId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -103,10 +106,28 @@ const AuthenticatedAdminDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminInventoryRoute =
+  AuthenticatedAdminInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminSettingsRoute =
   AuthenticatedAdminSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminProductsIndexRoute =
+  AuthenticatedAdminProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminProductsProductIdRoute =
+  AuthenticatedAdminProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 
@@ -124,8 +145,11 @@ export interface FileRoutesByFullPath {
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
+  '/admin/products/': typeof AuthenticatedAdminProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,8 +164,11 @@ export interface FileRoutesByTo {
   '/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
+  '/admin/products': typeof AuthenticatedAdminProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,8 +186,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/ai-writer': typeof AuthenticatedAdminAiWriterRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/products/$productId': typeof AuthenticatedAdminProductsProductIdRoute
+  '/_authenticated/admin/products/': typeof AuthenticatedAdminProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,8 +208,11 @@ export interface FileRouteTypes {
     | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
+    | '/admin/inventory'
     | '/admin/settings'
     | '/admin/'
+    | '/admin/products/$productId'
+    | '/admin/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -194,8 +227,11 @@ export interface FileRouteTypes {
     | '/admin/ai-writer'
     | '/admin/categories'
     | '/admin/dashboard'
+    | '/admin/inventory'
     | '/admin/settings'
     | '/admin'
+    | '/admin/products/$productId'
+    | '/admin/products'
   id:
     | '__root__'
     | '/'
@@ -212,8 +248,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ai-writer'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/inventory'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/products/$productId'
+    | '/_authenticated/admin/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -334,11 +373,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/inventory': {
+      id: '/_authenticated/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/settings': {
       id: '/_authenticated/admin/settings'
       path: '/settings'
       fullPath: '/admin/settings'
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/products/': {
+      id: '/_authenticated/admin/products/'
+      path: '/products'
+      fullPath: '/admin/products/'
+      preLoaderRoute: typeof AuthenticatedAdminProductsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/products/$productId': {
+      id: '/_authenticated/admin/products/$productId'
+      path: '/products/$productId'
+      fullPath: '/admin/products/$productId'
+      preLoaderRoute: typeof AuthenticatedAdminProductsProductIdRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
   }
@@ -348,8 +408,11 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAiWriterRoute: typeof AuthenticatedAdminAiWriterRoute
   AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminInventoryRoute: typeof AuthenticatedAdminInventoryRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminProductsProductIdRoute: typeof AuthenticatedAdminProductsProductIdRoute
+  AuthenticatedAdminProductsIndexRoute: typeof AuthenticatedAdminProductsIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -357,8 +420,12 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAiWriterRoute: AuthenticatedAdminAiWriterRoute,
     AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
     AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+    AuthenticatedAdminInventoryRoute: AuthenticatedAdminInventoryRoute,
     AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminProductsProductIdRoute:
+      AuthenticatedAdminProductsProductIdRoute,
+    AuthenticatedAdminProductsIndexRoute: AuthenticatedAdminProductsIndexRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =

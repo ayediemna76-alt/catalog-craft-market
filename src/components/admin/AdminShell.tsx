@@ -27,7 +27,7 @@ import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
-  to?: "/admin/dashboard" | "/admin/categories" | "/admin/ai-writer" | "/admin/settings";
+  to?: "/admin/dashboard" | "/admin/categories" | "/admin/products" | "/admin/inventory" | "/admin/ai-writer" | "/admin/settings";
   icon: typeof LayoutDashboard;
   fr: string;
   ar: string;
@@ -43,8 +43,8 @@ const NAV: { group: [string, string]; items: NavItem[] }[] = [
     group: ["Catalogue", "الكتالوج"],
     items: [
       { to: "/admin/categories", icon: FolderTree, fr: "Catégories & attributs", ar: "الأقسام والخصائص" },
-      { icon: Package, fr: "Produits", ar: "المنتجات", soon: "3" },
-      { icon: Boxes, fr: "Stock", ar: "المخزون", soon: "3" },
+      { icon: Package, fr: "Produits", ar: "المنتجات", to: "/admin/products" },
+      { icon: Boxes, fr: "Stock", ar: "المخزون", to: "/admin/inventory" },
       { to: "/admin/ai-writer", icon: Sparkles, fr: "Rédaction IA", ar: "التحرير بالذكاء الاصطناعي" },
     ],
   },

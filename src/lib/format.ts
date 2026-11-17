@@ -41,7 +41,26 @@ export function dbErrorMessage(error: unknown): string {
     category_too_deep: "Arborescence trop profonde.",
     forbidden: "Action réservée aux administrateurs.",
     not_authenticated: "Veuillez vous connecter.",
+    uq_variant_combination: "Deux variantes ont la même combinaison d'options.",
+    duplicate_combination: "Deux variantes ont la même combinaison d'options.",
+    variants_required: "Ajoutez au moins une variante.",
+    active_variant_required: "Au moins une variante doit rester active.",
+    variant_options_required: "Chaque variante doit avoir ses options (taille, couleur…).",
+    category_required: "Choisissez une catégorie.",
+    invalid_attribute: "Une caractéristique ne correspond pas à la catégorie choisie.",
+    invalid_option: "Une valeur choisie n'existe plus. Rechargez la page.",
+    too_many_images: "20 photos maximum par produit.",
+    too_many_variants: "200 variantes maximum par produit.",
+    invalid_quantity: "Quantité invalide.",
+    insufficient_stock: "Stock insuffisant pour cette opération.",
+    reason_required: "Indiquez un motif.",
+    invalid_action: "Opération inconnue.",
+    product_variants_sku_key: "Une référence de variante est déjà utilisée par un autre produit.",
+    products_sku_key: "Cette référence produit est déjà utilisée.",
+    products_slug_key: "Cette adresse web est déjà utilisée par un autre produit.",
   };
+  const missing = /missing_required:\s*([^\n"]+)/.exec(raw);
+  if (missing) return `Caractéristiques obligatoires manquantes : ${missing[1]!.trim()}.`;
   for (const [code, msg] of Object.entries(map)) if (raw.includes(code)) return msg;
   if (raw.includes("duplicate key") && raw.includes("slug")) return "Ce slug est déjà utilisé.";
   if (raw.includes("duplicate key") && raw.includes("code")) return "Ce code d'attribut existe déjà dans cette catégorie.";
