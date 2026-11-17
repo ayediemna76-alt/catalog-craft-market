@@ -10,3 +10,4 @@
 
 - [x] Answer: suggest a good next step after the remix (user question)
 - [x] AI product description writer with admin-managed templates (user request)
+- [ ] Fill the shop with an editable demo catalog (categories, attributes, products, variants, stock, images) (user request)
