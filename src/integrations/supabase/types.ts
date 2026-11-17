@@ -277,6 +277,42 @@ export type Database = {
           },
         ]
       }
+      description_templates: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          instructions: string
+          is_active: boolean
+          name: string
+          summary: string | null
+          target_length: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          instructions: string
+          is_active?: boolean
+          name: string
+          summary?: string | null
+          target_length?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          instructions?: string
+          is_active?: boolean
+          name?: string
+          summary?: string | null
+          target_length?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       finance_entries: {
         Row: {
           amount: number
