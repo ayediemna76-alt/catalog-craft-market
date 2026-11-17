@@ -39,8 +39,8 @@ export function DescriptionGenerator({
   initial,
   onApply,
 }: {
-  initial?: GeneratorInitial;
-  onApply?: (result: DescriptionResult) => void;
+  initial?: GeneratorInitial | undefined;
+  onApply?: ((result: DescriptionResult) => void) | undefined;
 }) {
   const { tr, locale } = useI18n();
   const [productName, setProductName] = useState(initial?.productName ?? "");
@@ -407,7 +407,7 @@ function ResultPanel({
   result: DescriptionResult | null;
   pending: boolean;
   onChange: (r: DescriptionResult) => void;
-  onApply?: (r: DescriptionResult) => void;
+  onApply?: ((r: DescriptionResult) => void) | undefined;
   onReset: () => void;
 }) {
   const { tr } = useI18n();
